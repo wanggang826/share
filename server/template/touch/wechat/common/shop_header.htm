@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0,user-scalable=0"/>
+<meta name="format-detection" content="telephone=no" />
+<title>{echo $title ? : DEFAULT_TITLE}</title>
+<link rel="stylesheet" href="static/css/reset.css" type="text/css">
+<link rel="stylesheet" href="static/css/jjsstyle.css?v={echo time()}" type="text/css">
+<script src="/static/js/jquery-2.1.4.min.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="//api.map.baidu.com/api?v=2.0&ak={BAIDU_MAP_AK}" type="text/javascript"></script>
+<script src="//webapi.amap.com/maps?v=1.3&key={GAODE_MAP_KEY}"></script>
+<script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="//static.alipay.com/aliBridge/1.0.0/aliBridge.min.js"></script>
+<script src="/static/js/iscroll-lite.min.js"></script>
+<script>
+    wx.config({
+        appId:'{$signPackage["appId"]}',
+        timestamp: '{$signPackage["timestamp"]}',
+        nonceStr: '{$signPackage["nonceStr"]}',
+        signature: '{$signPackage["signature"]}',
+        jsApiList: [
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+            'onMenuShareQQ',
+            'onMenuShareWeibo',
+            'onMenuShareQZone',
+            'startRecord',
+            'stopRecord',
+            'onVoiceRecor',
+            'playVoice',
+            'pauseVoice',
+            'stopVoice',
+            'onVoicePlay',
+            'uploadVoice',
+            'downloadVoice',
+            'chooseImage',
+            'previewImage',
+            'uploadImage',
+            'downloadImage',
+            'translateVoice',
+            'getNetworkType',
+            'openLocation',
+            'getLocation',
+            'hideOptionMenu',
+            'showOptionMenu',
+            'hideMenuItems',
+            'showMenuItems',
+            'hideAllNonBaseMenuItem',
+            'showAllNonBaseMenuItem',
+            'closeWindow',
+            'scanQRCode',
+            'chooseWXPay',
+            'openProductSpecificView',
+            'addCard',
+            'chooseCard',
+            'openCard',
+        ]
+    });
+    wx.error(function(res){
+        console.log(res);
+// config信息验证失败会执行error函数，如签名过期导致验证失败
+// 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+    });
+</script>
+</head>
+<body>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>图片</title>
+<link rel="stylesheet" href="/static/css/reset.css" type="text/css" media="all">
+<style>
+	.system-error{position: fixed;height: 100%;width: 100%;}
+	.system-error h4{text-align: center; position: relative;top: 50%; -webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);transform: translateY(-50%); }
+</style>
+<script src="/static/js/jquery-2.1.4.min.js"></script>
+</head>
+
+<body>
+	<div class="system-error">
+		<h4><img src="static/images/system-error.png"/></h4>
+	</div>
+	
+	<script>
+		if(/Android|webOS|iPhone|ipod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+			$(".system-error h4 img").css("width","460px");
+		} else {
+			$(".system-error h4 img").css("width","500px");
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+
+/*微信、支付宝*/
+.wxPay-main:after,.wxPay-text h4:after{
+	content:"";
+	clear:both;
+	display:block;
+	height:0;
+	overflow:hidden;
+	visibility:hidden
+}
+.gray {
+	background:#eee !important;
+	color:#999 !important
+}
+.mask-bg {
+	width:100%;
+	height:100%;
+	z-index:99;
+	background:rgba(0,0,0,0.2);
+	position:fixed;
+	top:0;
+	left:0
+}
+
+.mask-bomb {
+	width:84%;
+	background:#fff;
+	padding:5% 3%;
+	z-index:9;
+	position:fixed;
+	left:50%;
+	margin-left:-45%;
+	border-radius:6px
+}
+
+
+.no-umbrella {
+	margin:20px 0 48px 0 !important
+}
+.no-umbrella ~ .lease-notpay {
+	margin-bottom:20px
+}
+.shop-pay-content{
+	width:90%;
+	padding:8% 5%;
+	background:#fff
+}
+.shop-pay-content h2{
+	text-align:center
+}
+.shop-pay-content h2 img {
+	border-radius:50%;
+	width:70px
+}
+.pay-deposit {
+	text-align:center;
+	margin:16px 0 24px 0;
+}
+.pay-deposit h4 {
+	font-size:16px;
+}
+.pay-deposit span{
+	color: #666;
+}
+.pay-deposit h6 {
+	color:#09925E;
+	font-size:16px;
+	margin-top:4px;
+}
+.wxPay-footer {
+	width:90%;
+	padding:10px 5%;
+	background:#eee;
+}
+.wxPay-footer h4 {
+	text-align:center;
+	position:relative;
+	margin:10px 0 14px 0;
+	font-size:16px;
+}
+.wxPay-footer h4 span:before {
+	left:0;
+}
+.wxPay-footer h4 span:after {
+	right:0;
+}
+.wxPay-footer h4 span:before,.wxPay-footer h4 span:after {
+	content:'';
+	position:absolute;
+	top:50%;
+	background:#999;
+	width:36%;
+	height:1px
+}
+.wxPay-footer ul li {
+	margin-bottom:10px
+}
+.wxPay-footer ul li span {
+	color:#666
+}
+.lease-notpay {
+	text-align:center
+}
+.lease-pay{
+	text-align:center
+}
+.lease-pay a,.lease-notpay span {
+	display:inline-block;
+	width:70%;
+	padding:3%;
+	background:#fff100;
+	color:#131815;
+	text-align:center;
+	border-radius:6px;
+	font-size:14px;
+	margin-top: 4%;
+}
+.lease-notpay span {
+	background:#ccc !important;
+	color:#fff
+}
+#lease-bg2,#wxPay-loading,#lease-bg3{
+	display:none;
+}
+.lease-info .mask-bomb{
+	top: 30%;
+	text-align: center;
+}
+.lease-info .mask-bomb h4{
+	font-size: 15px;
+}
+.lease-info .mask-bomb a{
+	display: inline-block;
+	width: 30%;
+	padding: 3% 4%;
+	background: #fff100;
+	border-radius: 6px;
+	color: #313131;
+	margin-top:10%; 
+}
+/*loading*/
+#wxPay-loading img {
+	width: 24px;
+	position:absolute;
+	top:48%;
+	left:50%;
+	margin-left:-12px;
+}
+@media only screen and (min-width:320px) and (max-width:359px) {
+	
+}
+@media only screen and (min-width:360px) and (max-width:399px) {
+	.shop-pay-content h2 img{width: 80px;}
+	.pay-deposit span,.lease-pay a, .lease-notpay span,.wxPay-footer h4 span{font-size: 16px;}
+	.pay-deposit h4{font-size: 18px;}
+	.wxPay-footer ul li span{font-size:15px;}
+
+}
+@media only screen and (min-width:400px) and (max-width:479px) {
+	.shop-pay-content h2 img{width: 80px;}
+	.pay-deposit span,.wxPay-footer h4 span{font-size: 16px;}
+	.pay-deposit h4{font-size: 20px;}
+	.lease-pay a, .lease-notpay span{font-size: 17px;}
+	.wxPay-footer ul li span,.lease-info .mask-bomb a{font-size:15px;}
+}

@@ -1,0 +1,239 @@
+{template jjsan:cp/common/header}
+<style type="text/css">
+	button{margin: 10px 40px}
+</style>
+<fieldset class="layui-elem-field">
+	<legend>订单详情</legend>
+	<div class="layui-field-box" style="padding-left: 40px">
+		<strong>订单编号:</strong><span>{$order['orderid']}</span>
+	</div>
+	<div class="layui-field-box" style="padding-left: 40px">
+		<strong>订单金额:</strong><span>{$order['price']}</span>
+	</div>
+	<div class="layui-field-box" style="padding-left: 40px">
+		<strong>订单状态:</strong><span>{$order['status']}</span>
+	</div>
+	<div class="layui-field-box" style="padding-left: 40px">
+		<strong>已退金额:</strong><span>{echo unserialize($order['message'])['refund_fee']+0}</span>
+	</div>
+</fieldset>
+<fieldset class="layui-elem-field" style="text-align: center;">
+	<legend>借出失败撤销</legend>
+	<button class="layui-btn layui-btn-danger order_cancel">{lang jjsan:order_cancel}</button>
+</fieldset>
+<fieldset class="layui-elem-field" style="text-align: center;">
+	<legend>归还失败退款</legend>
+	<button class="layui-btn layui-btn-normal" id="full_return_1" onclick="showMenu('full_return_menu');">{lang jjsan:full_return_deposit}</button>
+	<button class="layui-btn layui-btn-normal" id="part_return_1" onclick="showMenu('part_return_menu');">{lang jjsan:part_return_deposit}</button>
+	<!--{if $order['platform'] != PLATFORM_ZHIMA}-->
+	<button class="layui-btn layui-btn-normal" id="money_return_1" onclick="showMenu('money_return_menu');">{lang jjsan:money_return_deposit}</button>
+	<!--{/if}-->
+	
+	<form action="index.php?mod={$mod}&act={$act}&opt={$opt}&do=return_deposit&orderid={$order['orderid']}" method="post" id="part_return">
+		<div id="part_return_menu">
+			<div class="marginbto">
+				<span>{lang jjsan:return_time}:</span>
+				<input type="date" name="date" value="{$date}"/>
+				<input type="time" name="time" value="{$time}"/>
+			</div>
+			<div  class="marginbto">
+				<span>{lang jjsan:return_station}:</span>
+				<select name="station1">
+					<!--{loop $stations $s}-->
+					<!--{if $s['title'] != ''}-->
+					<option value="{$s['id']}" {echo $borrow_station == $s['id']? 'selected' : ''}>{$s['title']}</option>
+					<!--{/if}-->
+					<!--{/loop}-->
+				</select>
+			</div>
+
+			<div class="Part_deposit showBut">
+				<!-- <input type="hidden" name="part_return_pre" value="1"> -->
+				<input type="hidden" name="part_return_confirm" value="1">
+                <!-- <input class="submitbutton" type="submit" onClick="switchcat();" name="submitbtn" value="{lang jjsan:calculate}"> -->
+                <input class="layui-btn part_return" type="submit" value="{lang jjsan:confirm}">
+            </div>
+			<!-- <input class="submitbutton" name="part_return_pre" type="submit" value="calculate"/> -->
+			<!-- <input class="submitbutton" name="part_return_confirm" type="submit" value="confirm"/> -->
+		</div>
+	</form>
+
+	<form action="index.php?mod={$mod}&act={$act}&opt={$opt}&do=return_deposit&orderid={$order['orderid']}" method="post" id="full_return" >
+		<div id="full_return_menu">
+			<h4>{lang jjsan:full_return_alert}</h4>
+			<div class="marginbto">
+				<span>{lang jjsan:return_time}:</span>
+				<select name="full_return_time">
+					<option value="1">1{lang jjsan:hour_period}</option>
+					<option value="2">2{lang jjsan:hour_period}</option>
+					<option value="3">3{lang jjsan:hour_period}</option>
+					<option value="4">4{lang jjsan:hour_period}</option>
+				</select>
+			</div>
+			<div class="marginbto">
+				<span>{lang jjsan:return_station}:</span>
+				<select name="station">
+					<!--{loop $stations $s}-->
+					<!--{if $s['title'] != ''}-->
+					<option value="{$s['id']}" {echo $borrow_station == $s['id']? 'selected' : ''}>{$s['title']}</option>
+					<!--{/if}-->
+					<!--{/loop}-->
+				</select>
+			</div>
+			<input type="hidden" name="full_return" value="1">
+			<input class="layui-btn full_return" type="submit" value="{lang jjsan:confirm}">
+			<!-- <input class="submitbutton" name="full_return" type="submit" value="yes"/> -->
+		</div>
+	</form>
+</fieldset>
+<!--{if $order['platform'] == PLATFORM_ZHIMA}-->
+<fieldset class="layui-elem-field">
+	<legend>芝麻订单手动退款</legend>
+	<div style="text-align: center; margin-top: 20px;">
+		<p>需先找到支付宝交易号到商户后台退款后, 再用以下入口进行退款</p>
+		<input id="zhima_refund" type="text" size=30 placeholder="请输入退款金额, 不能超过已产生的费用" />
+	</div>
+	<div style="text-align: center;">
+		<button  class="layui-btn layui-btn-normal" onclick="zhimaRefund();">{lang jjsan:zhima_refund}</button>
+	</div>
+</fieldset>
+<!--{/if}-->
+
+<form action="index.php?mod={$mod}&act={$act}&opt={$opt}&do=return_deposit&orderid={$order['orderid']}" method="post" id="money_return">
+		<div id="money_return_menu" style="display:none; width: 366px; margin: auto">
+			<h4>{lang jjsan:input_return_deposit}:</h4>
+			<input type="text" name="deposit">
+			<input type="hidden" name="money_return" value="1">
+			<div class="style-input">
+				<input class="layui-btn money_return" type="submit" name="submitbtn" value="{lang jjsan:confirm}">
+			</div>
+		</div>
+
+	</form>
+<script type="text/javascript">
+	layui.use('layer', function() {
+		var layer = layui.layer;
+		$('.order_cancel').click(function () {
+			if(confirm("确定撤销？")) {
+				$.ajax({
+					url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=return_deposit&orderid={$order['orderid']}&order_cancel=1',
+					type: 'POST',
+					success: function(e) {
+						if(e.code == 0) {
+							layer.msg(e.msg, {icon: 1}, function(){
+								parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+								parent.location.reload(); // 父页面刷新
+							});
+						} else {
+							console.log(e);
+							layer.msg(e.msg, {icon: 2});
+						}
+					},
+				})
+			}
+		})
+
+		$('.full_return').click(function () {
+			console.log($('#full_return')[0].action);
+            $.ajax({
+                url: $('#full_return')[0].action,
+                type: 'POST',
+                data: $('#full_return').serialize(),
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        console.log(e);
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+            })
+			return false;
+        })
+
+        $('.part_return').click(function () {
+            console.log($('#part_return'));
+            console.log($('#part_return')[0].action);
+            $.ajax({
+                url: $('#part_return')[0].action,
+                type: 'POST',
+                data: $('#part_return').serialize(),
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        console.log(e);
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+            })
+            return false;
+        })
+
+        $('.money_return').click(function () {
+            console.log($('#money_return')[0].action);
+            $.ajax({
+                url: $('#money_return')[0].action,
+                type: 'POST',
+                data: $('#money_return').serialize(),
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        console.log(e);
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+            })
+            return false;
+        })
+
+	});
+
+    function zhimaRefund() {
+		var refund = document.getElementById('zhima_refund').value;
+		if (parseFloat(refund) != refund) {
+			alert("请输入数字");
+			return;
+		document.getElementById("Prompt").style.display= "none";
+		}
+        if(confirm("已经在支付宝后台完成退款操作了吗？")) {
+            var url = 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=return_deposit&orderid={$order["orderid"]}&zhima_opt=refund&refund=' + refund;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        console.log(e);
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+            })
+        }
+    }
+
+    function showMenu(id){
+	    var arr = new Array('part_return_menu', 'full_return_menu', 'money_return_menu');
+	    for(var i = 0; i < arr.length; i++){
+	        document.getElementById(arr[i]).style.display = 'none';
+		}
+	    var ctrlObj = document.getElementById(id);
+		ctrlObj.style.display = 'block';
+	}
+
+</script>
+{template jjsan:cp/common/footer}

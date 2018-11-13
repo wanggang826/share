@@ -1,0 +1,136 @@
+<h2>
+	<span id="info_tip"></span>
+</h2>
+
+<header>
+	<form method="POST" action="/index.php?mod=cp&act=user&opt=refund_list">
+		<fieldset class="fieldsetclass">
+			<legend> 全局搜索 </legend>
+				<div class="normalfield maincaution">
+					<select name="gtype">
+						<option value="openid" {echo $_GET['gtype'] == 'openid'? 'selected' : ''}>用户	OPENID</option>
+						<option value="nickname" {echo $_GET['gtype'] == 'nickname'? 'selected' : ''}>用户昵称</option>
+					</select>
+					<input type="text" name="gvalue" size="30" value="{$_GET['gvalue']}" style="height: 32px;">
+					<!--{if $request}-->
+					<label for="request"><input type="checkbox" name="request" id="request" checked>仅显示待退款</label>
+					<!--{else}-->
+					<label for="request"><input type="checkbox" name="request" id="request">仅显示待退款</label>
+					<!--{/if}-->
+				</div>
+				<input class="submitbutton" type="submit" value="查询">
+		</fieldset>
+	</form>
+</header>
+
+<section style="margin-top:20px;">
+	<!--{if $uid}-->
+	<div>
+		用户昵称: $user['nickname']
+	</div>
+	<div>
+		用户openid: $user['openid']
+	</div>
+	<div>
+		用户平台:
+	<!--{if $user['platform'] == 0}-->
+		微信平台
+	<!--{elseif $user['platform'] == 1}-->
+		支付宝平台
+	<!--{/if}-->
+	</div>
+	<!--{/if}-->
+	<!--{if $num}-->
+	<div>
+		共 {$num} 条记录
+	</div>
+	<!--{/if}-->
+	<!--{if $refund_list}-->
+
+		<input type="hidden" name="items">
+		<table class="layui-table" width="97%" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th width="15%">
+						提现申请时间
+					</th>
+					<th width="15%">
+						提现金额
+					</th>
+
+					<th width="15%">
+						已退款金额
+					</th>
+
+					<th width="15%">
+						退款完成时间
+					</th>
+
+					<th width="15%">
+						状态
+					</th>
+
+					<th width="25%">
+						退款来源订单数
+					</th>
+				</tr>
+			</thead>
+			<!--{loop $refund_list $order}-->
+			<tr>
+				<td>
+					{$order['request_time']}
+				</td>
+				<td >
+					{$order['refund']}
+				</td>
+
+				<td>
+					{$order['refunded']}
+				</td>
+
+				<td>
+					{$order['refund_time']}
+				</td>
+
+				<td>
+					<!--{if $order['status'] == 1}-->
+					待退款
+					<!--{elseif $order['status'] == 2}-->
+					已退款
+					<!--{/if}-->
+				</td>
+
+				<td>
+					<!--{if $order['status'] == 2}-->
+						<!--{if $order['detail_count'] == 0}-->
+						<span>0</span>
+						<!--{else}-->
+					<a href="javascript:;" class="refund_detail">{$order['detail_count']}</a>
+						<!--{/if}-->
+					<!--{else}-->
+					<span>----</span>
+					<!--{/if}-->
+				</td>
+			</tr>
+			<!--{/loop}-->
+		</table>
+		<p> {$pagehtm} </p>
+	<!--{/if}-->
+</section>
+<script>
+    layui.use('layer', function(){
+        var layer = layui.layer;
+        // 退款订单详情
+        $(".refund_detail").click(function(){
+            layer.open({
+                type: 2,
+                title: '订单详情',
+                maxmin: true,
+                area : ['800px' , '600px'],
+                content: "index.php?mod=cp&act=user&opt=refund_list&opt=show_refund_detail&id=$order['id']",
+            });
+        });
+    });
+</script>
+
+

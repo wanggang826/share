@@ -1,0 +1,91 @@
+{template jjsan:wechat/common/shop_header}
+<script>
+    //调用扫描二维码接口
+    var scan = function(){
+        // 微信扫码
+        if (isWeiXin()) {
+            wx.scanQRCode({
+                needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function (res) {
+                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                    $.ajax({
+                        type:'get',
+                        contentType:"application/json;charset=utf-8",
+                        dataType:"json",
+                        url:'/index.php?mod=api&act=platform&opt=get_station_info',
+                        data:
+                            {
+                                uid : '{$uid}',
+                                qrcode : result,
+                                platform : "{PLATFORM_WX}",
+                            },
+                        success:function(station_info)
+                        {
+                            window.location.href = '/wxpay.php?act=pay&mobile=2&stationid=' + station_info.data.sid + '&itemtype=umbrella';
+                        }
+                    });
+                }
+            });
+        }
+
+        //支付宝扫一扫
+        if (isAlipay()) {
+            document.addEventListener('AlipayJSBridgeReady', function () {
+                if(navigator.userAgent.indexOf("AlipayClient")===-1){
+                    alert('请在支付宝钱包内运行');
+                }else{
+                    if((Ali.alipayVersion).slice(0,3)>=8.1){
+                        Ali.scan({
+                            type: 'qr' //qr(二维码) / bar(条形码) / card(银行卡号)
+                        }, function(result) {
+                            if(result.errorCode){
+                                //没有扫码的情况
+                                //errorCode=10，用户取消
+                                //errorCode=11，操作失败
+                            }else{
+                                //成功扫码的情况
+                                //result.barCode	string	扫描所得条码数据
+                                //result.qrCode	string	扫描所得二维码数据
+                                //result.cardNumber	string	扫描所得银行卡号
+                                var result = result.qrCode;
+                                $.ajax({
+                                    type:'get',
+                                    contentType:"application/json;charset=utf-8",
+                                    dataType:"json",
+                                    url:'/index.php?mod=api&act=platform&opt=get_station_info',
+                                    data:
+                                        {
+                                            uid : '{$uid}',
+                                            qrcode : result,
+                                            platform : "{PLATFORM_ALIPAY}",
+                                        },
+                                    success:function(station_info)
+                                    {
+                                        window.location.href = '/wxpay.php?act=pay&mobile=2&stationid=' + station_info.data.sid + '&itemtype=umbrella';
+                                    }
+                                });
+//                                var codResult = encodeURI(result);
+//                                window.location.href=result;
+                            }
+                        });
+                    }else{
+                        Ali.alert({
+                            title: '亲',
+                            message: '请升级您的钱包到最新版',
+                            button: '确定'
+                        });
+                    }
+                }
+            }, false);
+        }
+    };
+</script>
+<script>
+    $(document).ready(function(){
+        scan();
+    })
+    wx.ready(function () {
+        scan();
+    })
+</script>

@@ -1,0 +1,303 @@
+{template jjsan:wechat/common/shop_header}
+<style>
+    body {background-color: #eee;}
+</style>
+<div class="address-layer">
+    <!--<div class="switchBtn"><a href="index.php?mod=wechat&act=shop&opt=map"><i></i></a></div>-->
+    <div class="loading"><img src="/static/images/loading-san.gif"/></div>
+    <ul class="address-list" id="list">
+    </ul>
+    <div id="load-img" style="display:none;"><i></i><span>加载中</span></div>
+    <div id="load-txt" style="display:none;"><h4>--- 到底了 ---</h4></div>
+</div>
+<script>
+    DEBUG = false;
+    $(function(){
+        var is_loading_end = false; //是否全部加载完毕marker
+        var is_scroll_load_end = true; // 是否上次触发的加载完毕
+        var loading_time = 0; // 加载次数
+        var current_point = false;   // 当前地理位置,基于百度的
+        var cookie_expires = 60; // cookie 保持 2 min
+        var render_sids = [];    // 已经渲染了的站点
+        var render_shop_ids = [];  // 已经渲染了的商铺
+        var city = '';
+        var ulw = $(window).width() - 20;
+        var bw = ulw/4;
+        var address_txt_width = ulw - (bw + 50);
+        var total = 0;  // 百度数据总站点个数
+        var page_size = 20; // 分页大小
+        var page = 0; // 页码
+
+        // 如果 cookie 有缓存 current_point ,则设置它
+        if(getCookie('lng')){
+            current_point.lng = getCookie('lng');
+            current_point.lat = getCookie('lat');
+            // debug("使用的是缓存经纬度 : " + getCookie('lng') + " , " + getCookie('lat'));
+        }
+        if(getCookie('city', true)){
+            city = getCookie('city');
+            // debug("使用的是缓存数据city : " + getCookie('city'));
+        }
+
+        // 渲染主流程设置
+        var load_id = setInterval(function()
+        {
+            // 20s 钟加载不出来的话，就reload吧
+            if(loading_time > 400){
+                clearInterval(load_id);
+                location.reload();
+                return ;
+            }else{
+                // 当第一次加载时，尝试去获取地理位置
+                if (loading_time == 1) {
+                    // 使用高德定位
+                    var map = new AMap.Map('container', {resizeEnable: true});
+                    map.plugin('AMap.Geolocation', function () {
+                        // 获取高德地图经纬度
+                        var gd_geolocation = new AMap.Geolocation({
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            buttonOffset: new AMap.Pixel(10, 20),
+                            zoomToAccuracy: true,
+                            buttonPosition: 'RB'
+                        });
+                        gd_geolocation.getCurrentPosition();
+                        AMap.event.addListener(gd_geolocation, 'complete', function (data) {
+                            time_debug(start_time, '获取地理位置的时间:');
+                            // debug("高德经纬度: " + data.position.lng + " , " + data.position.lat);
+
+                            // 获取城市定位
+                            map.plugin('AMap.Geocoder', function () {
+                                // 逆地理编码 实例化Geocoder
+                                geocoder = new AMap.Geocoder({});
+                                var lnglatXY = [data.position.lng, data.position.lat];//地图上所标点的坐标
+                                console.log(lnglatXY);
+                                geocoder.getAddress(lnglatXY, function (status, result) {
+                                    if (status === 'complete' && result.info === 'OK') {
+                                        time_debug(start_time, '获得当前城市时间');
+                                        //即 result.regeocode.formattedAddress
+                                        city = result.regeocode.addressComponent.city;
+                                        if (!city) {
+                                            city = result.regeocode.addressComponent.province;
+                                        }
+                                        // 缓存城市
+                                        setCookie('city', city, cookie_expires, true);
+                                        console.log("高德获得当前城市:" + city);
+                                    } else {
+                                        console.log("城市 : 无法获取当前城市");
+                                    }
+                                });
+                            });
+
+                            // 使用百度接口将高德地图经纬度转换成百度经纬度
+                            var ggPoint = new BMap.Point(data.position.lng, data.position.lat);
+                            var convertor = new BMap.Convertor();
+                            var pointArr = [];
+                            pointArr.push(ggPoint);
+                            convertor.translate(pointArr, 3, 5, function (baidu_point) {
+                                // debug("百度: " + baidu_point.lng + " , " + baidu_point.lat);
+                                baidu_point = baidu_point.points[0];
+                                current_point = baidu_point;
+                                // 缓存经纬度
+                                setCookie('lng', current_point.lng, cookie_expires);
+                                setCookie('lat', current_point.lat, cookie_expires);
+                            });
+                        });
+                        AMap.event.addListener(gd_geolocation, 'error', function (e) {
+                            console.log(e);
+                        });
+                    });
+
+                }
+                // 加载成功了
+                if(current_point && city){
+                    // 记录地理位置
+                    $.ajax({
+                        type: "get",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        url: '/index.php?mod=api&act=common&opt=user_location_log',
+                        data: {lng:current_point.lng,lat:current_point.lat,date:Date()},
+                        success: function (data){}
+                    });
+                    load_list(page,current_point,city);
+
+                    // 绑定滚动加载事件
+                    $(window).scroll(function() {
+                        //当内容滚动到底部时加载新的内容
+                        if ($(this).scrollTop() + $(window).height() + 20 >= $(document).height() && $(this).scrollTop() > 20) {
+                            if(is_scroll_load_end){
+                                page ++;
+                                load_list(page,current_point,city);
+                            }
+                        }
+                    });
+                    // 停止计数
+                    clearInterval(load_id);
+                    return;
+                }else{
+                    // 继续加载
+                    loading_time ++;
+                }
+            }
+        }, 50);
+
+        function load_list(page_index,current_point,city)
+        {
+			$(".switchBtn").show();
+            if(is_loading_end){
+                return;
+            }else{
+                if(page_index > 0){
+                    $("#load-img").css("display","block");
+                }
+            }
+            var cond = {
+                'q' : city, //限制搜索当前城市
+                'filter' : 'enable:1',
+                'geotable_id' : "{GEOTABLE_ID}",
+                'sortby' : 'distance:1',
+                'radius' : 50000,
+                'bounds' : '',
+                'page_size': page_size,
+                'page_index' : page_index,
+                'ak' :"{BAIDU_MAP_AK}",
+                'location' : current_point.lng + ',' + current_point.lat,
+            };
+            $.ajax({
+                type: "get",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                url:"https://api.map.baidu.com/geosearch/v3/nearby?callback=?",
+                data: cond,
+                success: function(data){
+                    if(isset(data.status) && data.status == 0){
+                        if(total == 0) {
+                            total = data.total; // 获取百度数据站点总数
+                        }
+                        var stations = data.contents;
+                        var station_ids = {};
+                        for(var x in stations){
+                            if(stations[x]['sid']){
+                                station_ids[x] = stations[x]['sid'];
+                            }
+                        }
+                        //console.log(station_ids);
+                        // 获取数据库站点数据
+                        $.ajax({
+                            type:'get',
+                            contentType:"application/json;charset=utf-8",
+                            dataType:"json",
+                            url:'/index.php?mod=wechat&act=shop&opt=list&ajax=1',
+                            data:{shop_station_ids : station_ids},
+                            success:function(stations_db)
+                            {
+                                // 合并百度地图和数据库的站点数据
+                                for(var x in stations){
+                                    var sid = stations[x].sid;
+                                    for(var y in stations_db){
+                                        if(sid == stations_db[y].id){
+                                            var sb = stations_db[y];
+                                            for(var i in sb){
+                                                stations[x][i] = sb[i];
+                                            }
+                                        }
+                                    }
+                                    if(!stations[x].id){
+                                        delete stations[x];
+                                        continue;
+                                    }
+                                }
+                                //console.log(stations);
+                                // 渲染页面
+                                $("#load-img").css("display","none");
+                                $(".address-layer .loading").css("display","none");
+                                show_list(stations);
+                                if(page_size * page >= total){
+                                    $("#load-txt").css("display","block");
+                                    is_loading_end = true;
+                                }
+                                is_scroll_load_end = true;
+                            }
+                        });
+                    }
+                }
+            });
+            // time_debug(start_time,'加载第 ' + (page_index + 1) + ' 页数据时间');
+        }
+
+        //排序方法
+        function jsonSort(array, field, reverse)
+        {
+            if (array.length < 2 || !field || typeof array[0] !== "object") {
+                return array;
+            }
+            array.sort(function (x, y) {
+                var cb_num = x[field] - y[field];
+                return cb_num;
+            });
+            if (reverse) {
+                array.reverse();
+            }
+            return array;
+        }
+
+        // 实际渲染站点
+        function show_list(stations)
+        {
+            console.log('here is the stations information');
+            console.log(stations);
+            // 转换距离
+            var stations_list = stations;
+            jsonSort(stations_list, "distance", false);
+            for(var i in stations_list){
+                stations_list[i].distance = distanceUnit(stations_list[i].distance);
+            }
+
+            for(var i in stations_list){
+                if(render_sids.indexOf(stations_list[i]['sid']) != -1){
+                    continue;
+                }
+                if( stations_list[i]['shopid'] != 0 && render_shop_ids.indexOf(stations_list[i]['shopid']) != -1){
+                    continue;
+                    debug(stations_list[i]['shopid']);
+                    debug(render_shop_ids.indexOf(stations_list[i]['shopid']));
+                }
+                var c = ''; // 商铺列表
+                c += '<li>';
+                c += 	'<a href="/index.php?mod={$mod}&act={$act}&opt=detail&shop_station_id='+stations_list[i].id+'&lng='+stations_list[i]['location'][0]+'&lat='+stations_list[i]['location'][1]+'">';
+                c += 	'<div class="business-img"><img src="'+stations_list[i].shoplogo+'" onerror="this.src=\'/static/images/fail-logo.png\'"/></div>';
+                c += 		'<div class="address-txt" style="width:'+address_txt_width+'px">';  //宽度
+                c += 			'<h2>';
+                c += 			    '<span>'+stations_list[i].title+'</span>';	// 使用商鋪名稱
+                c += 				'<em>'+stations_list[i].distance+'</em>';   //距离
+                c += 			'</h2>';
+                c += 			'<div class="umbrella-surplus">';
+                c += 				'<div class="umbrella-color">';
+                c += 					'<img src="static/images/san.png" onerror="this.src=\'/static/images/fail-logo.jpg\'"/>';
+                c += 					'<div class="umbrella-txt">';
+                c += 						'<h4>';
+                c += 							'<i class="icon-borrow"></i>&nbsp;';
+                c += 							'<span>可借</span>&nbsp;&nbsp;';
+                c += 							'<span>'+stations_list[i].usable+'</span>';
+                c += 						'</h4>';
+                c += 						'<h4>';
+                c += 							'<i class="icon-return"></i>&nbsp;<span>可还</span>&nbsp;&nbsp;<span>'+stations_list[i].empty+'</span>';
+                c += 						'</h4>';
+                c += 					'</div>';
+                c += 				'</div>';
+                c += 			'</div>';
+                c += 			'<p>'+stations_list[i].address+'</p>';
+                c += 		'</div>';
+                c += 		'<div class="clear"></div>';
+                c += 	'</a>';
+                c += '</li>';
+                $("#list").append(c);
+
+                render_sids.push(stations_list[i]['sid']);  // 将渲染过的加入已渲染数组
+                render_shop_ids.push(stations_list[i]['shopid']);  // 将渲染过的商铺加入商铺渲染数组
+            }
+        }
+    });
+</script>
+{template jjsan:wechat/common/footer}

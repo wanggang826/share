@@ -1,0 +1,70 @@
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="/static/css/reset.css" type="text/css" media="all">
+<link rel="stylesheet" href="/static/css/jjsstyle.css" type="text/css" media="all">
+<script t src="/static/js/jquery-2.1.4.min.js"></script>
+<title>换机页面</title>
+<style>body{background: #eee;}</style>
+</head>
+<body>
+-->
+{template jjsan:wechat/common/header}
+
+<ul class="shop-station-replace">
+	<li><h4>换机详情</h4></li>
+	<!--{if $shopStationInfo}-->
+	<li><span>当前机器编号:</span><em>{$stationInfo['id']}</em></li>
+	<li class="modify-style"><span>当前商铺名称:</span><em>{$shopInfo['name']}</em></li>
+	<li class="modify-style"><span>当前商铺站点名称:</span><em>{$shopStationInfo['title']}</em></li>
+	<li><span>新机器编号：</span><input type="number" id="stationid" /></li>
+	<li><input type="button" name="replace" value="确认更换" onclick="replaceShopStation()"></li>
+	<!--{else}-->
+	<li class="no-unbind">当前机器还未绑定商铺站点</li>
+	<li><input type="button" value="关闭页面" onclick="wxApiCloseWindow()"></li>
+	<!--{/if}-->
+</ul>
+<script>
+function replaceShopStation() {
+    var new_station_id = $('#stationid').val();
+    if(new_station_id) {
+        if(confirm("确定换机？")) {
+            var url = 'index.php?mod=api&act=shop_station';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'opt': 'shop_station_replace',
+					'uid' : '{$uid}',
+                    'stationid' : '{$stationid}',
+					'new_stationid' : new_station_id
+				},
+            })
+			.done(function(data) {
+				if(data.code == 0){
+					alert("换机成功！");
+					wxApiCloseWindow();
+				}else{
+					alert(data.msg);
+				}
+				location.reload();
+			})
+			.fail(function(data) {
+				alert("服务器有异常，请稍后再试");
+			})
+        }
+	}
+}
+
+	//关闭微信页面
+function wxApiCloseWindow() {
+	WeixinJSBridge.invoke('closeWindow',{},function(res){
+		if(res.err_msg == "close_window:error") {
+			alert("关闭微信网页错误，请稍后重试，谢谢");
+		}
+	});
+}
+</script>
+{template jjsan:wechat/common/footer}

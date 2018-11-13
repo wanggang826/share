@@ -1,0 +1,81 @@
+{template jjsan:cp/common/header}
+<header class="pagetitle">
+	<h2>街借伞</h2>
+	<h4>在线管理系统</h4>
+	<!--{if $act != 'admin' || !in_array($opt, ['register', 'login'])}-->
+	<div class="exit-login">
+		<div class="now_page"><span id="titles"></span></div>
+		<span>欢迎您，{echo $admin->adminInfo['name']} ( {echo $auth->getCurrentRoleName()} ) </span>
+		<a href="index.php?mod=cp&act=admin&opt=logout"><i class="icon-off"></i>退出登录</a>
+	</div>
+	<!--{/if}-->
+</header>
+
+<div class="onepage">
+	<!--{if $act != 'admin' || !in_array($opt, ['register', 'login'])}-->
+	<span id="more"><i class="icon icon-list"></i></span>
+	<span id="remove"><i class="icon icon-remove"></i></span>
+	<nav class="fl_nav">
+		<ul class="layui-nav layui-nav-tree">
+			<!--{loop $nav_access_tree $k $v}-->
+				<li class="layui-nav-item">
+					<a href="javascript:;" class="<!--{if $k == $act}-->border_active<!--{/if}-->">
+						{$v['text']}
+						<i class="icon icon-right icon-angle-right <!--{if $k == $act}-->icon-right-transform<!--{/if}-->"></i>
+					</a>
+					<ul class="layui-nav-child" style="<!--{if $k == $act}--> display:block; <!--{/if}-->">
+						<!--{loop $v['sub_nav'] $kk $vv}-->
+						<li>
+							<a href="index.php?mod=cp&act={$k}&opt={$kk}"
+							class="
+								<!--{if $k == $act}-->
+									a-active
+									<!--{if $opt == $kk}--> active <!--{/if}-->
+								<!--{/if}-->
+							">{$vv['opt']}</a>
+						</li>
+						<!--{/loop}-->
+					</ul>
+				</li>
+			<!--{/loop}-->
+		</ul>
+	</nav>
+<!--{/if}-->
+	<div class="fl_main">
+			<article>
+                <!--{eval include_once template($view);}-->
+			</article>
+	</div>
+</div>
+
+<script>
+$(document).ready(function($) {
+	$(".layui-nav-item>a").click(function(e){
+		e.preventDefault();
+		$(this).parent().siblings(".layui-nav-item").find(".layui-nav-child").slideUp();
+		$(this).siblings(".layui-nav-child").slideToggle();
+		var angle_right = $(this).find(".icon-angle-right");
+		if(angle_right.hasClass('icon-right-transform')){
+			angle_right.removeClass("icon-right-transform");
+		}else {
+			$(".layui-nav-item>a").find(".icon-angle-right").removeClass("icon-right-transform");
+			angle_right.addClass("icon-right-transform");
+		}
+	})
+	$('.a-active').parents('.layui-nav-child').show();
+	$('.a-active').parents('.layui-nav-child').siblings().addClass("border_active");
+	$("#titles").html($(".active").html());
+	$("#more").click(function(){
+		$(".fl_nav").show();
+		$(".fl_main").css("margin-left","200px");
+		$("#remove").show();
+	})
+	$("#remove").click(function(){
+		$(".fl_nav").hide();
+		$(".fl_main").css("margin-left","0");
+		$(this).hide();
+	})
+
+});
+</script>
+{template jjsan:cp/common/footer}

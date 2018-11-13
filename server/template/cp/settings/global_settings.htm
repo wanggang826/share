@@ -1,0 +1,36 @@
+{template jjsan:cp/common/header}
+<form id="form_data">
+<span style="color:red;">{$error_msg}</span>
+<fieldset class="fieldsetclass">
+    <legend> 运营配置 </legend>
+    <div class="settings style-input">
+        <span> 客服电话 </span> :
+        <input name="service_phone" class="ui-input-longSize" type="text" value="{CUSTOMER_SERVICE_PHONE}" /> 
+    </div>
+    <div style="margin-top: 20px;">
+		<input class="layui-btn submitbutton" type="button" value="提交">
+	</div>
+</fieldset>
+<span style="color:green;">{$success_msg}</span>
+</form>
+<script>
+    layui.use(['layer', 'form'], function(){})
+    $('.submitbutton').click(function(){
+        $.ajax({
+            url: 'index.php?mod=cp&act=settings&opt=global_settings&submit=true',
+            type: 'POST',
+            data: $('#form_data').serialize(),
+            success: function(e) {
+                if (e.code == 0) {
+                    layer.msg(e.msg, {icon: 1}, function(){
+                        parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                        parent.location.reload(); // 父页面刷新
+                    });
+                } else {
+                    layer.msg(e.msg, {icon: 2});
+                }
+            },
+        })
+    })
+</script>
+{template jjsan:cp/common/footer}

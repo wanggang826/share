@@ -1,0 +1,30 @@
+{template jjsan:common/header}
+<script>
+    function callCloseWindow() {
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', wxApiCloseWindow, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', wxApiCloseWindow);
+                document.attachEvent('onWeixinJSBridgeReady', wxApiCloseWindow);
+            }
+        }else{
+            wxApiCloseWindow();
+            return;
+        }
+
+        if (typeof AlipayJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('AlipayJSBridgeReady', alipayCloseWindow, false);
+            }else if (document.attachEvent){
+                document.attachEvent('AlipayJSBridgeReady', alipayCloseWindow);
+                document.attachEvent('onAlipayJSBridgeReady', alipayCloseWindow);
+            }
+        }else{
+            alipayCloseWindow();
+        }
+    }
+    alert('信用借用成功, 请等待雨伞弹出, 谢谢');
+    callCloseWindow();
+</script>
+{template jjsan:common/footer}

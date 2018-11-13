@@ -1,0 +1,91 @@
+{template jjsan:wechat/common/header}
+<div class="carry-cash">
+
+	<ul>
+    	<li><h4 id="account_deposit">已支付押金：</h4><span><em>{$user['deposit']}</em>元</span></li>
+        <li><h4>已产生费用：</h4><span><em>{$user['usefee']}</em>元</span></li>
+        <li><h4>账户余额：</h4><span><em id="account_money">{$user['usablemoney']}</em>元</span></li>
+        <li><h4>待退款：</h4><span><em id="refund_wait">{$user['refund']}</em>元</span></li>
+    </ul>
+	<div class="withdraw-btn">
+		<input type="hidden" name="formhash" value="{FORMHASH}">
+		<input type="hidden" id="refund" name="refund" value="{$user['usablemoney']}">
+		<!--{if $user['usablemoney'] > 0}-->
+			<input type="button" value="点击提现" onclick="refundReq();" />
+		<!--{else}-->
+			<input type="button" value="点击提现" class="gray"/>
+		<!--{/if}-->
+	</div>
+    <div class="carry-explain">
+    	<h4>提现说明：</h4>
+        <p>1.租借时候支付的押金会在归还雨伞后原路返还到街借伞余额，可随时自行提现；</p>
+		<p>2.您可以通过已产生费用查看您使用雨伞时的扣费情况，也可以通过账户余额查看剩余押金信息；</p>
+        <p>3.“待退款”是您已经提现，但尚未到账的金额；</p>
+        <p>4.提现申请将在下一个工作日受理。提现的金额将原路返回，银行卡支付在2-5个工作日退回支付银行卡中；</p>
+        <p>5.如有其他疑问，请点击“用户中心-使用帮助”了解。</p>
+    </div>
+</div>
+
+<div class="carryCash-loading mask-bg">
+    <img src="static/images/bx_loader.gif" />
+</div>
+
+<div class="carry-bg1 refund_tip_dlg mask-bg">
+	<div class="carry-bomb mask-bomb">
+		<h4>提现申请成功，请耐心等待系统退款，谢谢!</h4>
+		<a href="javascript:;">关闭</a>
+	</div>
+</div>
+<div class="carry-bg2 refund_tip_dlg mask-bg">
+	<div class="carry-bomb mask-bomb">
+		<h4>对不起，您的账户余额不足，谢谢!</h4>
+		<a href="javascript:;">关闭</a>
+	</div>
+</div>
+
+<script>
+$('.carry-bomb a').click(function(){
+	$('.refund_tip_dlg').hide();
+})
+function refundReq() {
+	$('#refund').val(parseFloat($('#refund').val()).toFixed(2));
+	if($('#refund').val() == '' || $('#refund').val() == 0 || parseFloat($('#account_money').html()) < parseFloat($('#refund').val())) {
+		alert("您暂无余额可以提现!");
+		return;
+	}
+	
+	$('.carryCash-loading').show();
+	$.ajax({
+		url:'index.php?mod=wechat&act=user&opt=carry_cash&do=refund_request',
+		type:'GET',
+		dataType: 'JSON',
+		success:function(data) {
+			$('.carryCash-loading').hide();
+			if(data.errcode == 0) {
+				// 更新界面
+				$('#account_money').html((parseFloat($('#account_money').html()) - parseFloat($('#refund').val())).toFixed(2));
+				$('#refund_wait').html((parseFloat($('#refund_wait').html()) + parseFloat($('#refund').val())).toFixed(2));
+				// 提示
+				$('.carry-bg1').show();
+				return;
+			} else if(data.errcode == 1) {
+				$('.carry-bg2').show();
+				return;
+			} else {
+				alert('参数有误');
+				alert(data.errmsg);
+				$.unblockUI();
+			}
+		},
+		error:function(e) {
+			$('.refund_tip_dlg').hide();
+			alert(JSON.stringify(e));
+			alert("服务器异常, 请稍后再试");
+		},
+		complete:function(e) {
+		}
+	});
+}
+</script>
+
+{template jjsan:wechat/common/footer}

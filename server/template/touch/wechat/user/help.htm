@@ -1,0 +1,89 @@
+{template jjsan:wechat/common/header}
+
+<div class="help-center">
+    <ul>
+    	<li>
+            <a href="javascript:;">
+            	<h4>如何租借雨伞</h4>
+                <i></i>
+            </a>
+			<h6>
+				<i></i>
+				<span>
+					<p>1.打开微信或者支付宝，扫码关注街借伞公众号。</p>
+					<p>2.支付押金。</p>
+					<p>3.支付成功后拿走雨伞。</p>
+				</span>
+			</h6>
+        </li>
+    	<li>
+            <a href="javascript:;">
+            	<h4>如何归还雨伞</h4>
+                <i></i>
+            </a>
+			<h6>
+				<i></i>
+				<span>
+					<p>1.打开“JJ伞”公众号的“附近网点”，查看离您最近的设备。（已经在机器面前的客户请直接跳到第二步）</p>
+					<p>2.伞柄插入机器的卡槽即可。</p>
+				</span>
+			</h6>
+        </li>
+    	<li>
+            <a href="javascript:;">
+            	<h4>如何退回押金</h4>
+                <i></i>
+            </a>
+			<h6>
+				<i></i>
+				<span>
+					<p>归还雨伞后，公众号会有归还成功提醒，此时押金会退回街借伞账户余额，您可以：</p>
+					<p>1.不提现，下次租借直接使用街借伞余额支付押金，以后可随时提现。</p>
+					<p>2.点击“用户中心”→“提现押金”申请提现，提现后，金额退至待退款，于1-5个工作日原路退回支付账户。</p>
+				</span>
+			</h6>
+        </li>
+    	<li>
+            <a href="javascript:;">
+            	<h4>提现后如何确认到账</h4>
+                <i></i>
+            </a>
+			<h6>
+				<i></i>
+				<span>
+					<p>您好！提现到账确认分以下几种情况：</p>
+					<p>1.微信零钱支付：到账查询点击微信→钱包→零钱→零钱明细（零钱页面右上角），查看您的提现记录，以确认提现是否到账。</p>
+					<p>2.微信绑定银行卡支付：到账时微信支付会有退款到账通知，若需确认，请您查看银行交易明细，是否有提现金额入账。（微信支付到账通知因需要银行反馈，所以到账通知时间会和金额入账时间有差异）</p>
+					<p>3.微信绑定信用卡支付：信用卡客户和银行卡客户相同，但需确认自己的结账日期，根据结账日期确认查询已出账单还是未出账单。</p>
+				</span>
+			</h6>
+        </li>
+    	<li>
+            <a href="javascript:;">
+            	<h4>租借过程中异常处理&常见疑问</h4>
+                <i></i>
+            </a>
+			<h6>
+				<i></i>
+				<span>
+					<p>1.支付成功后未出伞——如遇该情况，系统会在5分钟内退款至您的街借伞账户，您可以尝试重新租借。您也可以点击“用户中心”→“提现押金”，申请提现后金额会原路退回。</p>
+					<p>2.归还失败——机器偶尔会因网络环境问题导致该情况，请及时联系客服{CUSTOMER_SERVICE_PHONE}，或者在JJ伞公众号留言，我们会及时回复和处理。</p>
+				</span>
+			</h6>
+        </li>
+    </ul>
+	<div class="contactBtn"><a href="tel:400-900-8113"><i></i>联系客服</a></div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.help-center ul li a').click(function(){
+		var li = $(this).parents('li').siblings('li');
+		li.find('i').removeClass('transform-turnUp');
+		li.find('h6').hide();
+		$(this).siblings('h6').slideToggle('fast');
+		$(this).find('i').toggleClass('transform-turnUp');
+	})
+})
+</script>
+{template jjsan:wechat/common/footer}

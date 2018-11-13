@@ -1,0 +1,63 @@
+{template jjsan:wechat/common/shop_header}
+<div id="alipay-form" style="display: none"></div>
+<script>
+    //调用扫描二维码接口
+    var scan = function(){
+        // 微信扫码
+        if (isWeiXin()) {
+            wx.scanQRCode({
+                needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function (res) {
+                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                }
+            });
+        }
+
+        //支付宝扫一扫
+        if (isAlipay()) {
+            document.addEventListener('AlipayJSBridgeReady', function () {
+                if(navigator.userAgent.indexOf("AlipayClient")===-1){
+                    alert('请在支付宝钱包内运行');
+                }else{
+                    if((Ali.alipayVersion).slice(0,3)>=8.1){
+                        Ali.scan({
+                            type: 'qr' //qr(二维码) / bar(条形码) / card(银行卡号)
+                        }, function(result) {
+                            if(result.errorCode){
+                                //没有扫码的情况
+                                //errorCode=10，用户取消
+                                //errorCode=11，操作失败
+                            }else{
+                                //成功扫码的情况
+                                //result.barCode	string	扫描所得条码数据
+                                //result.qrCode	string	扫描所得二维码数据
+                                //result.cardNumber	string	扫描所得银行卡号
+                                var result = result.qrCode;
+                                var codResult = encodeURI(result);
+                                window.location.href=result;
+                            }
+                        });
+                    }else{
+                        Ali.alert({
+                            title: '亲',
+                            message: '请升级您的钱包到最新版',
+                            button: '确定'
+                        });
+                    }
+                }
+            }, false);
+        }
+    };
+    $('#test').click(scan);
+</script>
+<script>
+    $(document).ready(function(){
+//        scan();
+        $('#alipay-form').html("https://openapi.alipay.com/gateway.do?app_id=2017033106499516&version=1.0&format=json&sign_type=RSA2&method=zhima.merchant.order.rent.create&timestamp=2017-09-19+18%3A24%3A58&auth_token=&alipay_sdk=alipay-sdk-php-20161101&terminal_type=&terminal_info=&prod_code=&notify_url=&charset=UTF-8&app_auth_token=&sign=hgRl8Gp1%2FcJHv2JyIUrDfUeF0mjY9B6gHxin1kywXadYV%2BSo%2FF0a2BnNuM46iVdtRPhdKb0ea3RZ3LZXzdL9LlxRb16bKRWw6rQ8iOCCryAaGuBhwayn4MgsLfl9r%2FVrEgj81YCvsyc%2BkdJCxYYBHQZz6mbBzxcj4jliy8NyUVLoCjekmbJBtn8UkZwQJBoSKcV4MCC%2FHYJuvWFR7PjjJ3g1YCU8ZpOycT7hG%2Bq9zfqTtUkE5%2Fa77ZoSaRnhy7J6IuTexIIOSREruZIgfKGqEw29I3YG5%2B%2BJOq0Jgwyng2DVlfPTnRcwCkZJZ4Ica%2Fxc8x1IGGR%2B0hKsfb%2FW3M9NWw%3D%3D&biz_content=%7B%22invoke_type%22%3A%22WINDOWS%22%2C%22invoke_return_url%22%3A%22http%3A%2F%2Fjjs.lystrong.cn%2Fzhimanotify.php%22%2C%22out_order_no%22%3A%22JJSAN-20170919-182458-28418%22%2C%22product_code%22%3A%22w1010100000000002858%22%2C%22goods_name%22%3A%22%E4%BE%BF%E6%B0%91%E9%9B%A8%E4%BC%9E%22%2C%22rent_info%22%3A%220.01%E5%85%83%2F1%E5%B0%8F%E6%97%B6%22%2C%22rent_unit%22%3A%22HOUR_YUAN%22%2C%22rent_amount%22%3A%220.01%22%2C%22deposit_amount%22%3A%220.02%22%2C%22deposit_state%22%3A%22Y%22%2C%22expiry_time%22%3A%222017-09-20+18%3A24%3A58%22%2C%22borrow_shop_name%22%3A%22%E5%8D%A1%E5%84%BF%E9%85%B7%E8%BD%AF%E4%BB%B6+A%22%7D<form id='zhimasubmit' name='zhimasubmit' action='https://openapi.alipay.com/gateway.do?app_id=2017033106499516&version=1.0&format=json&sign_type=RSA2&method=zhima.merchant.order.rent.create&timestamp=2017-09-19+18%3A24%3A58&auth_token=&alipay_sdk=alipay-sdk-php-20161101&terminal_type=&terminal_info=&prod_code=&notify_url=&charset=UTF-8&app_auth_token=&sign=hgRl8Gp1%2FcJHv2JyIUrDfUeF0mjY9B6gHxin1kywXadYV%2BSo%2FF0a2BnNuM46iVdtRPhdKb0ea3RZ3LZXzdL9LlxRb16bKRWw6rQ8iOCCryAaGuBhwayn4MgsLfl9r%2FVrEgj81YCvsyc%2BkdJCxYYBHQZz6mbBzxcj4jliy8NyUVLoCjekmbJBtn8UkZwQJBoSKcV4MCC%2FHYJuvWFR7PjjJ3g1YCU8ZpOycT7hG%2Bq9zfqTtUkE5%2Fa77ZoSaRnhy7J6IuTexIIOSREruZIgfKGqEw29I3YG5%2B%2BJOq0Jgwyng2DVlfPTnRcwCkZJZ4Ica%2Fxc8x1IGGR%2B0hKsfb%2FW3M9NWw%3D%3D&biz_content=%7B%22invoke_type%22%3A%22WINDOWS%22%2C%22invoke_return_url%22%3A%22http%3A%2F%2Fjjs.lystrong.cn%2Fzhimanotify.php%22%2C%22out_order_no%22%3A%22JJSAN-20170919-182458-28418%22%2C%22product_code%22%3A%22w1010100000000002858%22%2C%22goods_name%22%3A%22%E4%BE%BF%E6%B0%91%E9%9B%A8%E4%BC%9E%22%2C%22rent_info%22%3A%220.01%E5%85%83%2F1%E5%B0%8F%E6%97%B6%22%2C%22rent_unit%22%3A%22HOUR_YUAN%22%2C%22rent_amount%22%3A%220.01%22%2C%22deposit_amount%22%3A%220.02%22%2C%22deposit_state%22%3A%22Y%22%2C%22expiry_time%22%3A%222017-09-20+18%3A24%3A58%22%2C%22borrow_shop_name%22%3A%22%E5%8D%A1%E5%84%BF%E9%85%B7%E8%BD%AF%E4%BB%B6+A%22%7D' method='post'><script>document.forms['zhimasubmit'].submit();</script>
+");
+    })
+    wx.ready(function () {
+        scan();
+    })
+</script>

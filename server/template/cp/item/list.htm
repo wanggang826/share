@@ -1,0 +1,59 @@
+<!--{if $cdo['add']}-->
+<fieldset class="fieldsetclass">
+	<legend>操作</legend>
+	<button class="layui-btn" id="add-item">{$cdo['add']}</button>
+</fieldset>
+<!--{/if}-->
+<table class="layui-table">
+	<thead>
+		<tr>
+			<th>商品ID</th>
+			<th>商品名称</th>
+			<th>租赁价格</th>
+			<th>描述</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+	<tbody>
+	<!--{loop $goods $item}-->
+	<tr>
+		<td>{$item['id']}</td>
+		<td>{$item['subject']}</td>
+		<td>{$item['price']}元</td>
+		<td>{$item['desc']}</td>
+		<td>
+			<!--{if $cdo['edit']}-->
+			<button class="layui-btn layui-btn-normal layui-btn-mini edit-item" data-id="{$item['id']}">{$cdo['edit']}</button>
+			<!--{/if}-->
+		</td>
+	</tr>
+	<!--{/loop}-->
+	</tbody>
+</table>
+<script>
+layui.use('layer', function(){
+	var layer = layui.layer;
+
+    //　更新
+    $(".edit-item").click(function(){
+        layer.open({
+            type: 2,
+            title: '更新商品',
+            maxmin: true,
+            area : ['600px' , '500px'],
+            content: '/index.php?mod={$mod}&act={$act}&opt={$opt}&do=edit&item_id='+$(this).data('id')
+        });
+    });
+
+    //　添加
+    $("#add-item").click(function(){
+        layer.open({
+            type: 2,
+            title: '添加商品',
+            maxmin: true,
+            area : ['600px' , '500px'],
+            content: '/index.php?mod={$mod}&act={$act}&opt={$opt}&do=add'
+        });
+    });
+});
+</script>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no" />
+	<title>{echo $navtitle ? : DEFAULT_TITLE}</title>
+	<link rel="stylesheet" href="/static/css/reset.css" media="all">
+	<link rel="stylesheet" href="/static/css/pay.css" media="all">
+	<script src="/static/js/jquery-2.1.4.min.js"></script>
+	<style>body{ background: #eee;}</style>
+</head>
+<body>
+<div class="shop-pay-main">
+	<div class="shop-pay-content ">
+		
+		<!--{if $umbrellaNumbers}-->
+			<!--芝麻信用-->
+			<!--{if $platform == PLATFORM_ZHIMA}-->
+				<h2><img src="/static/images/icon-logo.png"/></h2>
+				<div class="pay-deposit">
+					<span>芝麻分600及以上有机会</span>
+					<h4>免押金租借</h4>
+				</div>
+				<div class="lease-pay" id="pay-money">
+					<a href="javascript:;" id="routine">确认租借</a>
+				</div>
+			<!--{/if}-->
+			<!--{if $platform == PLATFORM_WX}-->
+				<h2><img src="/static/images/icon-shopMoney.png"/></h2>
+				<!--{if $diffPage == 1}-->
+					<div class="pay-deposit">
+						<span>需支付押金</span>
+						<h4>{$price}元</h4>
+					</div>
+					<div class="lease-pay" id="pay-money">
+						<a href="javascript:;" id="routine">立即支付</a>
+					</div>
+				<!--{elseif $diffPage == 2}-->
+					<div class="pay-deposit">
+						<span>您的押金余额为&nbsp;{$usablemoney}元</span>
+						<h6>需要补押金&nbsp;{$payMore}元</h6>
+					</div>
+					<div class="lease-pay" id="pay-money">
+						<a href="javascript:;" id="routine">确认租借</a>
+					</div>
+				<!--{elseif $diffPage == 3}-->
+					<div class="pay-deposit">
+						<span>您的押金余额为&nbsp;{$usablemoney}元</span>
+						<h6>可直接租借</h6>
+					</div>
+					<div class="lease-pay" id="pay-money">
+						<a href="javascript:;" id="routine">确认租借</a>
+					</div>
+				<!--{/if}-->
+			<!--{/if}-->
+		<!--{else}-->
+			<div class="pay-deposit no-umbrella">
+				<h6>哎呀，亲来晚啦，雨伞都被借走啦</h6>
+			</div>
+			<div class="lease-notpay">
+				<span>暂无可借</span>
+			</div>
+		<!--{/if}-->
+	</div>
+	<div class="wxPay-footer">
+		<h4>
+			<span>租借须知</span>
+		</h4>
+		<ul>
+			<!--{if $platform == PLATFORM_ZHIMA}-->
+				<li><span>1. 雨伞租借{$feeStr}</span></li>
+				<li><span>2. 雨伞押金{echo $price+0}元。</span></li>
+				<li><span>3. 信用借还免押金仅支持租借一把雨伞。</span></li>
+			<!--{else}-->
+				<li><span>1. 雨伞租借{$feeStr}</span></li>
+				<li><span>2. 归还后，押金可在用户中心提现。</span></li>
+			<!--{/if}-->
+		</ul>
+	</div>
+	<!-- 点击支付后的提示消息 -->
+	<div id="lease-bg2" class="lease-info mask-bg">
+		<div class="mask-bomb">
+			<h4>当前有其他用户正在借伞，请稍后~</h4><a href="javascript:;" id="dlg_close2">关闭</a>
+		</div>
+	</div>
+	<div id="lease-bg3" class="lease-info mask-bg">
+		<div class="mask-bomb">
+		<h4>您有雨伞未归还，请归还后再进行租借。</h4><a href="javascript:;" id="dlg_close3">关闭</a>
+		</div>
+	</div>
+	<div id="wxPay-loading" class="lease-info mask-bg">
+		<img src="static/images/bx_loader.gif"/>
+	</div>
+</div>
+<div id="alipay-form" style="display: none"></div>
+<script>
+    function jsApiCall(jsApiParameters, orderid) {
+        WeixinJSBridge.invoke(
+            'getBrandWCPayRequest',
+            jsApiParameters,
+            function(res){
+                WeixinJSBridge.log(res.err_msg);
+                if( res.err_msg == "get_brand_wcpay_request:ok" ) {
+					window.location.href='/index.php?mod=wechat&act=user&opt=real_time&orderid=' + orderid;
+                } else if ( res.err_msg == "get_brand_wcpay_request:cancel" ){
+					document.getElementById("wxPay-loading").style.display="none";
+                } else if ( res.err_msg == "get_brand_wcpay_request:fail" ){
+                    alert("支付失败,请稍后再试,谢谢!");
+                } else {
+                    alert("Error:" + res.err_code);
+                }
+            }
+        );
+    }
+
+
+    function alipayCall(jsApiParameters) {
+        $('#alipay-form').html(jsApiParameters);
+    }
+
+    function callpay(data, orderid) {
+        // 微信支付
+        if (typeof WeixinJSBridge == 'object') {
+            var jsApiParameters = eval('(' + data + ')');
+            jsApiCall(jsApiParameters, orderid);
+            return;
+		}
+		// 支付宝支付
+		if (typeof AlipayJSBridge == 'object') {
+            alipayCall(data);
+            return;
+		}
+    }
+//
+	//关闭微信页面窗口
+    function wxApiCloseWindow() {
+        WeixinJSBridge.invoke('closeWindow',{},function(res){
+            if(res.err_msg == "close_window:error") {
+                alert("关闭微信网页错误，请稍后重试，谢谢");
+            }
+        });
+    }
+
+    function alipayCloseWindow() {
+        AlipayJSBridge.call('exitApp');
+    }
+
+    function callCloseWindow() {
+        if (typeof WeixinJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('WeixinJSBridgeReady', wxApiCloseWindow, false);
+            }else if (document.attachEvent){
+                document.attachEvent('WeixinJSBridgeReady', wxApiCloseWindow);
+                document.attachEvent('onWeixinJSBridgeReady', wxApiCloseWindow);
+            }
+        }else{
+            wxApiCloseWindow();
+            return;
+        }
+
+        if (typeof AlipayJSBridge == "undefined"){
+            if( document.addEventListener ){
+                document.addEventListener('AlipayJSBridgeReady', alipayCloseWindow, false);
+            }else if (document.attachEvent){
+                document.attachEvent('AlipayJSBridgeReady', alipayCloseWindow);
+                document.attachEvent('onAlipayJSBridgeReady', alipayCloseWindow);
+            }
+        }else{
+            alipayCloseWindow();
+        }
+    }
+
+	//支付
+	function pay(id) {
+		document.getElementById("wxPay-loading").style.display="block";
+		var url = '/wxpay.php?act=paydirect&stationid={$stationid}&itemid='+id;
+		var xmlHTTP = new XMLHttpRequest();
+		xmlHTTP.open('GET', url);
+		xmlHTTP.send(null);
+		xmlHTTP.onload = function () {};
+		xmlHTTP.onreadystatechange = function() {
+			if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) {
+			    console.log(xmlHTTP.responseText);
+				var e = JSON.parse(xmlHTTP.responseText);
+				if(e.errcode == 0) {
+					if(e.paytype == 1) {
+						//余额支付
+                        window.location.href='/index.php?mod=wechat&act=user&opt=real_time&orderid=' + e.orderid;
+						return;
+					} else if(e.paytype == 0) {
+						//在线支付
+						if(e.zm == true){
+                            alipayCall(e.jsApiParameters);
+							return;
+                        }
+						document.getElementById("wxPay-loading").style.display="none";
+						callpay(e.jsApiParameters, e.orderid);
+					}
+				} else if(e.errcode == 1) {
+                    document.getElementById("wxPay-loading").style.display="none";
+                    document.getElementById("lease-bg2").style.display="block";
+                    document.getElementById("dlg_close2").onclick=function(){
+                        document.getElementById("lease-bg2").style.display="none";
+                    }
+				} else if(e.errcode == 2) {
+                    document.getElementById("wxPay-loading").style.display="none";
+                    document.getElementById("lease-bg3").style.display="block";
+                    document.getElementById("dlg_close3").onclick=function(){
+                        document.getElementById("lease-bg3").style.display="none";
+                    }
+				} else {
+                    document.getElementById("wxPay-loading").style.display="none";
+                    alert('服务器出错啦，请稍后再试！');
+                    callCloseWindow();
+				}
+			}
+		}
+	}
+</script>
+<!--{if $umbrellaNumbers}-->
+<script>
+    document.getElementById('pay-money').onclick = function(){
+        var nowTime = new Date().getTime();
+        var clickTime =this.getAttribute("ctime");
+        if(clickTime != 'undefined' && (nowTime - clickTime < 500)) {
+            return false;
+        } else {
+            this.setAttribute("ctime",nowTime);
+            pay({$menuInfo['id']});
+        }
+    }
+</script>
+<!--{/if}-->
+</body>
+</html>

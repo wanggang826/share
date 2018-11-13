@@ -1,0 +1,61 @@
+{template jjsan:wechat/common/header}
+<div class="manage-3b manage-main">
+	<!--<div class="manage-logo"><img src="/static/images/manage-logo.png"/></div>-->
+	<h2>站点维护管理系统</h2>
+	<ul>
+		<li><a href="/index.php?mod=wechat&act=shop&opt=slot_mgr&stationid={$stationid}"><span>站点管理</span></a></li>
+		<!--{if $hidden_button}-->
+		<li><a href="/index.php?mod=wechat&act=shop&opt=init_addr&stationid={$stationid}"><span>定位系统</span></a></li>
+		<!--{else}-->
+		<li><a href="/index.php?mod=wechat&act=shop&opt=shop_station_replace&stationid={$stationid}"><span>换机</span></a></li>
+		<li><a href="javascript:;" class="retreat-machine"><span>撤机</span></a></li>
+		<!--{/if}-->
+	</ul>
+</div>
+<div class="manage-mask-bg">
+	<div class="manage-bomb">
+		<h4>是否撤机？</h4>
+		<div class="manage-bomb-btn">
+			<a href="javascript:;" id="manage-cancel">取消</a>
+			<a href="javascript:;" id="manage-sure">确定</a>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$(".manage-3b ul li a").click(function(){
+		$(".manage-3b ul li a").removeClass("manage-checked");
+		$(this).addClass("manage-checked");
+	});
+	$(".retreat-machine").click(function(){
+		$(".manage-mask-bg").css("display","block");
+	});
+	$("#manage-cancel").click(function(){
+		$(".manage-mask-bg").css("display","none");
+	});
+	
+	$("#manage-sure").click(function(){
+		var url = '/index.php?mod=api&act=shop_station&opt=shop_station_remove&uid={$uid}&stationid={$stationid}';
+		$.ajax({
+			url: url,
+			type: "GET",
+			dataType : 'JSON',
+			success:function(data){
+				if(data.code == 0) {
+					alert("撤机成功！");
+				}else {
+					alert(data.msg);
+				}
+			},
+			error:function() {
+				alert("服务器异常, 请稍后再试");
+			},
+			complete:function(){
+				$(".manage-mask-bg").css("display","none");
+			}
+		});
+	})
+	
+});
+</script>
+{template jjsan:wechat/common/footer}

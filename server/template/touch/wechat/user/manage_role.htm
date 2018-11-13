@@ -1,0 +1,40 @@
+{template jjsan:wechat/common/header}
+<style>body{ background:#e7e6e6;}</style>
+<div class="manage-role">
+	<div class="role-content">
+		<!--{if $flag == 'user'}-->
+		<h4>您现在是<em>[用户角色]</em></h4>
+		<h4>是否要切换身份为维护人员角色？</h4>
+		<div class="manage-btn">
+			<a href="javascript:;" class="roleCancel">取消</a>
+			<a href="javascript:;" onclick="checkout_role('set_install')">确定</a>
+		</div>
+		<!--{elseif $flag == 'install'}-->
+		<h4>您现在是<em>[维护人员角色]</em></h4>
+		<h4>是否要切换身份为用户角色？</h4>
+		<div class="manage-btn">
+			<a href="javascript:;" class="roleCancel">取消</a>
+			<a href="javascript:;" onclick="checkout_role('set_common')">确定</a>
+		</div>
+		<!--{else}-->
+		<h1>!!非法访问!!</h1>
+		<!--{/if}-->
+	</div>
+</div>
+
+<script>
+	function checkout_role(role) {
+		event.preventDefault();
+		var url = 'index.php?mod={$mod}&act={$act}&opt={$opt}&do='+ role;
+		$.get(url, function(data) {
+			alert(data);
+			window.location.reload();
+		});
+	}
+	
+	$(".roleCancel").click(function(){
+		$(".manage-role").css("display","none");
+		wxApiCloseWindow();
+	});
+</script>
+{template jjsan:wechat/common/footer}

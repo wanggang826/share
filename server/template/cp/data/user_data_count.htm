@@ -1,0 +1,146 @@
+<script src="static/laydate/laydate.js"></script>
+<form method="get" id="form_station_search" action="index.php">
+<fieldset class="fieldsetclass">
+	<input type="hidden" name="mod" value="{$mod}">
+	<input type="hidden" name="act" value="{$act}">
+	<input type="hidden" name="opt" value="{$opt}">
+	<input type="hidden" name="do" value="search">
+   	<legend>操作</legend>
+		<ul class="user-data-time">
+			<li>
+				<label class="layui-form-label"> 开始日期: </label>
+				<input name="stime" value="{$_GET['stime']}" class="laydate-icon" id="start"/>
+			</li>
+			<li>
+				<label class="layui-form-label"> 结束日期: </label>
+				<input name="etime" value="{$_GET['etime']}" class="laydate-icon" id="end"/>
+			</li>
+            <li>
+				<label class="layui-form-label">用户来源:</label>
+				<select name="platform">
+					<!--{loop $platform_arr $k $p}-->
+						<!--{if $k == $platform}-->
+							<option value="{$k}" selected>{$p}</option>
+						<!--{else}-->
+							<option value="{$k}">{$p}</option>
+						<!--{/if}-->
+					<!--{/loop}-->
+				</select>
+			</li>
+		</ul>
+		<div class="inline">
+			<input class="layui-btn" type="submit" class="" value="搜索" >
+			<input class="layui-btn layui-btn-danger" type="submit" name="export" value="导出" />
+		</div>
+</fieldset>
+</form>
+<div class="data-statistics">
+	<h3> 总共 <em>{$count}</em> 条结果</h3>
+</div>
+<table class="layui-table" cellpadding="0" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>日期</th>
+			<th>来源</th>
+			<th>新关注用户数</th>
+			<th>取消关注用户数</th>
+			<th>净增关注用户数</th>
+
+			<!-- <th>累积用户</th> -->
+			<th>借操作人数</th>
+			<th>付押金人数</th>
+			<th>付押金人次</th>
+			<th>提现人次</th>
+
+			<th>资金提现率<br>
+				<span class="sub-text">提现人次 / 付押金人次</span>
+			</th>
+			<th>租借成功人数</th>
+			<th>租借成功次数</th>
+			<th>平均每人使用频次（次/人）<br>
+				<span class="sub-text">租借成功次数　/　租借成功人数</span>
+			</th>
+			<th>付费人数</th>
+
+			<th>操作用户转化率<br><span class="sub-text">租借成功人数 / 借操作人数</span></th>
+		</tr>
+	</thead>
+    <tbody>
+		<!--{if $page == 1}-->
+		<tr>
+			<th> $sum['date'] </th>
+			<th> $sum['orgin'] </th>
+			<th> $sum['subscribe_user_count'] </th>
+			<th> $sum['unsubscribe_user_count'] </th>
+			<th> $sum['user_increase_count'] </th>
+
+			<th> $sum['shop_page_user_count'] </th>
+			<th> $sum['top_up_user_count'] </th>
+			<th> $sum['top_up_success_count'] </th>
+			<th> $sum['refund_count'] </th>
+			<th> $sum['refund_up_top_rate'] </th>
+
+			<th> $sum['success_user_count'] </th>
+			<th> $sum['order_count'] </th>
+			<th> $sum['order_user_rate'] </th>
+			<th> $sum['success_fee_user_count'] </th>
+			<th> $sum['user_operate_success_success'] </th>
+		</tr>
+		<!--{/if}-->
+		<!--{loop $show_data $u}-->
+		<tr>
+			<td>$u['date']</td>
+			<td>$u['origin']</td>
+			<td>$u['subscribe_user_count']</td>
+			<td>$u['unsubscribe_user_count']</td>
+			<td>$u['user_increase_count']</td>
+
+			<!-- <td>$u['user_accumulated']</td> -->
+			<td>$u['shop_page_user_count']</td>
+			<td>$u['top_up_user_count']</td>
+			<td>$u['top_up_success_count']</td>
+			<td>$u['refund_count']</td>
+
+			<td>$u['refund_up_top_rate']</td>
+			<td>$u['success_user_count']</td>
+			<td>$u['order_count']</td>
+			<td>$u['order_user_rate']</td>
+			<td>$u['success_fee_user_count']</td>
+
+			<td>$u['user_operate_success_success']</td>
+		</tr>
+		<!--{/loop}-->
+	</tbody>
+</table>
+{$pagehtm}
+
+<script>
+jQuery(document).ready(function(){
+	//选择开始和结束日期
+	var start = {
+		elem: '#start',
+		format: 'YYYY/MM/DD',
+		//min: laydate.now(), //设定最小日期为当前日期
+		max: '2099-06-16 23:59:59', //最大日期
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			 end.min = datas; //开始日选好后，重置结束日的最小日期
+			 end.start = datas //将结束日的初始值设定为开始日
+		}
+	};
+	var end = {
+		elem: '#end',
+		format: 'YYYY/MM/DD',
+		//min: laydate.now(),
+		max: '2099-06-16 23:59:59',
+		istime: true,
+		istoday: false,
+		choose: function(datas){
+			start.max = datas; //结束日选好后，重置开始日的最大日期
+		}
+	};
+	laydate(start);
+	laydate(end);
+})
+</script>

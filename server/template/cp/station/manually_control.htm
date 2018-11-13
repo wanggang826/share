@@ -1,0 +1,214 @@
+{template jjsan:cp/common/header}
+<table class="list" width="600px" cellpadding="0" cellspacing="0" style="text-align:center; margin: 20px auto">
+    <!--{if $cdo['sync_umbrella']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-normal sync_umbrella">同步雨伞信息</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['reboot']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green reboot">人工重启</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['init_set']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green init-set">初始化设备</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['element_module_open']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green element-module-open">模组开启</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['element_module_close']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green element-module-close">模组休眠</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['voice_module_open']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green voice-module-open">语音开启</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['voice_module_close']}-->
+    <tr>
+        <td>
+            <button class="layui-btn layui-btn-mini layui-btn-green voice-module-close">语音休眠</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['module_num']}-->
+    <tr>
+        <td>
+            模组个数
+            <select id="module_num">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option selected>7</option>
+            </select>
+            <br>
+            <br>
+            <button class="layui-btn layui-btn-mini layui-btn-normal module_num">发送</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+    <!--{if $cdo['upgrade']}-->
+    <tr>
+        <td style="text-align: center">
+            <span>文件名</span><input type="text" id="file_name" style="width: 200px; height: 30px; display: block; margin: auto">
+            <br>
+            <span>文件大小</span><input type="text" id="file_size" style="width: 200px; height: 30px; display: block; margin: auto" placeholder="以bytes为单位计数">
+            <br>
+            <button class="layui-btn layui-btn-mini layui-btn-green upgrade">设备升级</button>
+        </td>
+    </tr>
+    <!--{/if}-->
+</table>
+
+<script>
+    layui.use(['layer', 'form'], function() {
+        var layer = layui.layer;
+        $('.sync_umbrella').click(function () {
+            if (confirm('确定同步雨伞信息？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=sync_umbrella&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.reboot').click(function () {
+            if (confirm('确定重启该设备？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=reboot&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.module_num').click(function () {
+            if (confirm('确定发送模组个数信息？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=module_num&sid=' + {$sid} + '&module_num=' + $('#module_num').val(),
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.upgrade').click(function () {
+            if (confirm('确定升级该设备？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=upgrade&sid=' + {$sid} + '&file_name=' + $('#file_name').val() + '&file_size=' + $('#file_size').val(),
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.init-set').click(function () {
+            if (confirm('初始化设备会导致机器转到测试环境，确定要初始化该设备？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=init_set&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.element-module-open').click(function () {
+            if (confirm('确定打开机器的模组功能吗？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=element_module_open&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.element-module-close').click(function () {
+            if (confirm('确定关闭机器的模组功能吗？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=element_module_close&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.voice-module-open').click(function () {
+            if (confirm('确定打开机器的语音功能吗？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=voice_module_open&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+
+        $('.voice-module-close').click(function () {
+            if (confirm('确定关闭机器的语音功能吗？')) {
+                $.ajax({
+                    type: "get",
+                    url: 'index.php?mod=cp&act=station&opt=list&do=voice_module_close&sid=' + {$sid},
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('请求已发送', {icon: 1});
+                        }
+                    }
+                });
+            }
+        })
+    })
+</script>
+{template jjsan:cp/common/footer}

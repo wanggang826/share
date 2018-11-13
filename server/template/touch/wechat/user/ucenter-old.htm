@@ -1,0 +1,64 @@
+{template jjsan:wechat/common/header}
+<style>body{ background:#e7e6e6;}</style>
+<div class="ucenter">
+	<div class="uhead">
+        <div class="uportrait">
+			<img src="{$userInfo['headimgurl']}" onerror="this.src='/static/images/default.jpg'"/>
+        </div>
+        <h2>{$userInfo['nickname']}</h2>
+    </div>
+    <ul>
+		<li>
+			<a href="javascript:;">
+				<em class="icon-wallet"></em>
+				<h4>我的钱包</h4>
+				<span>{$user['usablemoney']} 元</span>
+			</a>
+		</li>
+    	<li>
+			<a href="/index.php?mod=wechat&act=user&opt=carry_cash">
+           		<em class="icon-money"></em>
+            	<h4>余额提现</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+    	<li>
+        <a href="/index.php?mod=wechat&act=user&opt=order_list">
+				<em class="icon-record"></em>
+            	<h4>租借记录</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+        <li>
+			<a href="/index.php?mod=wechat&act=user&opt=refund_log">
+           		<em class="icon-carryCash"></em>
+            	<h4>提现记录</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+    	<li>
+        	<a href="/index.php?mod=wechat&act=user&opt=help">
+				<em class="icon-help"></em>
+            	<h4>使用帮助</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+    	<li>
+        	<a href="http://www.jjsan.com">
+				<em class="icon-about"></em>
+            	<h4>关于街借伞</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+        <!--{if $install}-->
+        <li>
+            <a href="/index.php?mod=wechat&act=user&opt=manage_role">
+				<em class="icon-toggle"></em>
+                <h4>切换角色</h4>
+                <i class="arrow-rig"></i>
+            </a>
+        </li>
+        <!--{/if}-->
+    </ul>
+</div>
+{template jjsan:wechat/common/footer}

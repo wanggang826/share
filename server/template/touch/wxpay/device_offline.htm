@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{echo $navtitle ? : DEFAULT_TITLE}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="/static/css/reset.css" media="all">
+<link rel="stylesheet" href="/static/css/jjsstyle.css" media="all">
+</head>
+
+<body>
+<div class="device-offline">
+	<div class="device-offline-content">
+		<div class="icon-running">
+			<h4><img src="/static/images/icon-running.png"/></h4>
+		</div>
+		<div class="device-offline-text">
+			<h4>设备网络不稳定</h4>
+			<h4>点击前往附近网点租借雨伞</h4>
+		</div>
+
+		<div class="go-nearby-site">
+			<a href="/index.php?mod=wechat&act=shop&opt=list">前往附近网点租借</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>

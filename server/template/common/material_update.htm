@@ -1,0 +1,81 @@
+{template jjsan:cp/common/header}
+<form action="" method="post">
+	<div id="matbox0" class="matlist" style="margin:10px;">
+		<!--{loop $imgs $matid $img}-->
+		<div id="matbox0_{$matid}" class="imgbody">
+			<div style="display: inline-block">
+				<input type="hidden" name="mat0[{$matid}][src]" value="{$img}">
+				<img src="{$img}" alt="{$img}" style="width: 50px; height: 50px; margin:3px;">
+				<a href="javascript:;" onclick="delmatfrbox(this)">{lang jjsan:delete}</a>
+
+			</div>
+		</div>
+		<!--{/loop}-->
+	</div>
+	<div id="matselectbox" class="matlist" style="padding:5px;border:2px solid #009c4c; margin:10px;">
+		<!--{loop $mats $img}-->
+		<img src="/upload/carousel/{$img}" style="width:50px; height: 50px; margin:3px;" name="{img}" onclick="add_mat(this)">
+		<!--{/loop}-->
+	</div>
+	<div class="ui-btn-center">
+		<input class="layui-btn layui-btn-green" type="submit" value="更新轮播图">
+	</div>
+</form>
+<script>
+	function add_mat(img){
+		imgbody = document.getElementsByClassName('imgbody');
+		id = imgbody.length;
+		input = document.createElement('input');
+		input.setAttribute('type', 'hidden');
+		input.setAttribute('name', 'mat0[' + id +'][src]');
+		input.setAttribute('value', img.src);
+		image = document.createElement('img');
+		image.src = img.src;
+		image.alt = img.src;
+		image.style.width = '50px';
+		image.style.height = '50px';
+		a = document.createElement('a');
+		a.href = "javascript:;";
+		a.setAttribute('onclick', 'delmatfrbox(this)');
+		a.innerHTML = '删除';
+		div = document.createElement('div');
+		div1 = document.createElement('div');
+		div1.style.display = 'inline-block';
+		div.id = 'matbox0_' + id;
+		div.setAttribute('class', 'imgbody');
+		div.appendChild(div1);
+		div1.appendChild(input);
+		div1.appendChild(image);
+		div1.appendChild(a);
+		document.getElementById('matbox0').appendChild(div);
+	}
+
+    layui.use(['layer'], function(){
+        $('.update_carousel').click(function(){
+            $.ajax({
+                url: "{$action}",
+                type: 'post',
+                data: $('#formdata').serialize(),
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('内部错误', {icon: 2}, function(){
+                    });
+                }
+            })
+        })
+
+        $('.close').click(function(){
+            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+        })
+    })
+</script>
+{template jjsan:cp/common/footer}

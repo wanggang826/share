@@ -1,0 +1,98 @@
+{template jjsan:cp/common/header}
+<form class="layui-form" style="margin-top: 20px;" id="formdata">
+	<input type="hidden" name="station_strategy_id" id="station_strategy_id" value="{$station_strategy_id}">
+	<div class="layui-form-item">
+		<label class="layui-form-label">策略名称</label>
+		<div class="layui-input-inline">
+			<input type="text" name="name" value="{$systemSettings['name']}" class="layui-input" id="name">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">域名</label>
+		<div class="layui-input-inline">
+			<input type="text" name="domain" value="{$systemSettings['domain']}" class="layui-input" id="domain">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">IP地址</label>
+		<div class="layui-input-inline">
+			<input type="text" name="ip" value="{$systemSettings['ip']}" class="layui-input" id="ip">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">端口号</label>
+		<div class="layui-input-inline">
+			<input type="number" name="port" min="1024" value="{$systemSettings['port']}" class="layui-input" id="port">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">同步间隔(秒)</label>
+		<div class="layui-input-inline">
+			<input type="number" min="30" name="checkupdatedelay" value="{$systemSettings['checkupdatedelay']}" class="layui-input" id="checkupdatedelay">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">心跳时间(秒)</label>
+		<div class="layui-input-inline">
+			<input type="number" min="30" name="heartbeat" value="{$systemSettings['heartbeat']}" class="layui-input" id="heartbeat">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">软件版本号</label>
+		<div class="layui-input-inline">
+			<input type="number" name="soft_ver" min="0" max="23" value="{$systemSettings['soft_ver']}" class="layui-input" id="soft-ver">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">升级文件名</label>
+		<div class="layui-input-inline">
+			<input type="text" name="file_name" value="{$systemSettings['file_name']}" class="layui-input" id="file-name">
+		</div>
+	</div>
+	<div class="ui-btn-center">
+		<button class="layui-btn" id="add-strategy">提交</button>
+	</div>
+</form>
+<script>
+layui.use(['layer', 'form', 'upload'], function(){
+	layui.upload({
+		'url':'index.php?mod=api&act=common&opt=upload_upgrade_file',
+		'ext': 'hex',
+		'title': '选择16进制文本',
+		success: function(e){
+			if(e.code == 0){
+				$('#message').html(e.msg);
+			}else{
+				layer.msg(e.msg);
+			}
+		}
+	});
+	// 添加或者编辑
+	$('#add-strategy').click(function(){
+		if($('#station_strategy_id').val()>0) {
+			var url = 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=edit'
+		} else {
+			var url = 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=add';
+		}
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: $('#formdata').serialize(),
+			success:function(e) {
+				if(e.code == 0) {
+					layer.msg(e.msg, {icon: 1}, function(){
+						parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+						parent.location.reload(); // 父页面刷新
+					});
+				} else {
+					layer.msg(e.msg, {icon: 2});
+				}
+			},
+		});
+		return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+	});
+
+});
+</script>
+{template jjsan:cp/common/footer}
+

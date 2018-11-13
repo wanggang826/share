@@ -1,0 +1,140 @@
+page {
+  width: 100%;
+  height: 100%;
+  font-family: '微软雅黑';
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.container > view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.top >image {
+  height: 140rpx;
+  width: 140rpx;
+  margin: 128rpx 0 24rpx 0;
+}
+
+.usablemoney {
+  font-size: 28rpx;
+  color: #2a2929;
+  margin-bottom: 16rpx;
+}
+
+.remind {
+  font-size: 32rpx;
+  color: #2a2929;
+  margin-bottom: 128rpx;
+}
+
+.remind1 {
+  font-size: 32rpx;
+  color: #2a2929;
+  margin-bottom: 332rpx;
+}
+
+.pay {
+  width: 558rpx;
+  height: 76rpx;
+  background: linear-gradient(#ffd500, #feda02);
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2a2929;
+  font-size: 32rpx;
+}
+
+.tip {
+  width: 558rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 20rpx;
+  margin-top:30rpx;
+  margin-bottom:70rpx;
+  color: #2a2929;
+}
+
+.tip >image {
+  height: 28rpx;
+  width: 28rpx;
+}
+
+.agree {
+  display: inline-block;
+  color: #ff9600;
+}
+
+.bottom {
+  width: 100%;
+  flex-grow: 1;
+  background: #eee;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.name {
+  width: 100%;
+  height: 118rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 30rpx;
+}
+
+.line {
+  height: 2rpx;
+  width: 248rpx;
+  background: #8d8d8d;
+}
+
+.content {
+  width: 100%;
+}
+
+.content>text, .content>view {
+  display: block;
+  font-size: 26rpx;
+  color: #484848;
+  line-height: 36rpx;
+  margin-bottom: 20rpx;
+}
+
+.phone {
+  display: inline-block;
+  color: #002afe;
+}
+
+.btn {
+  width: 558rpx;
+  height: 76rpx;
+  background: linear-gradient(#ffd500, #feda02);
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2a2929;
+  font-size: 32rpx;
+  margin-bottom: 128rpx;
+}

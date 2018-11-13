@@ -1,0 +1,11 @@
+# 编辑器&IDE配置文件
+.settings
+.settings/
+.project
+.buildpath
+.idea/
+
+logs/
+daemon/env_cfg.inc.php
+daemon/swoole.tmp/
+daemon/swoole.php

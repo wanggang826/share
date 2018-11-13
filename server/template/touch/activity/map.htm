@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0,user-scalable=0"/>
+	<meta name="format-detection" content="telephone=no" />
+	<title>附近网点</title>
+	<link rel="stylesheet" href="http://oug5q3p1s.bkt.clouddn.com/reset.css" type="text/css">
+	<link rel="stylesheet" href="http://oug5q3p1s.bkt.clouddn.com/jjsstyle2.css" type="text/css">
+	<script src="http://oug5q3p1s.bkt.clouddn.com/jquery-2.1.4.min.js"></script>
+	<script src="http://oug5q3p1s.bkt.clouddn.com/common.js"></script>
+	<script src="//api.map.baidu.com/api?v=2.0&ak={BAIDU_MAP_AK}" type="text/javascript"></script>
+	<script src="//webapi.amap.com/maps?v=1.3&key={GAODE_MAP_KEY}"></script>
+	<script src="//static.alipay.com/aliBridge/1.0.0/aliBridge.min.js"></script>
+</head>
+<body>
+<style>body{ background:#eee}</style>
+<link rel="stylesheet" href="http://oug5q3p1s.bkt.clouddn.com/jquery.bxslider.css" type="text/css" media="all">
+<script src="http://oug5q3p1s.bkt.clouddn.com/jquery.bxslider.min.js"></script>
+<div class="map">
+	<div id="container"></div>
+	<div class="icon-location"><i></i></div>
+	<div class="user-operation">
+		<h4>
+			<a class="umbrella-borrow" href="javascript:void(0);">
+				<img src="http://oug5q3p1s.bkt.clouddn.com/icon-borrow.png"/>
+			</a>
+		</h4>
+	</div>
+</div>
+<!--底部详情菜单（站点详情）-->
+<div class="slip-box">
+	<div id="station-title"></div>
+	<div><i class="slip-icon icon-usable"></i>可借:<span id="usable"></span></div>
+	<div><i class="slip-icon icon-empty"></i>可还:<span id="empty"></span></div>
+	<div>距您<span id="distance"></span><s class="line"></s><span id="addr"></span></div>
+	<span id="goto">到这去</span>
+</div>
+<div id="mapContainer" style="background-color:green;"></div>
+<script>
+    var loading_time = 0; // 加载次数
+    var current_point = false;   // 当前地理位置,基于百度的
+    var cookie_expires = 60; // cookie 保持 2 min
+    var city = '';
+    var is_loading_end = false; //是否全部加载完毕marker
+    var is_scroll_load_end = true; // 是否上次触发的加载完毕
+    var render_sids = [];    // 已经渲染了的站点
+    var render_shop_ids = [];  // 已经渲染了的商铺
+    var ulw = $(window).width() - 20;
+    var bw = ulw/4;
+    var address_txt_width = ulw - (bw + 50);
+    var total = 0;  // 百度数据总站点个数
+    var page_size = 20; // 分页大小
+    var page = 0; // 页码
+    var EARTHRADIUS = 6370996.81;
+    var init_point = false;
+    var marker_point = false;
+    var isList = true;
+    //定义全局dom
+    var slipBoxDom = $('.slip-box'); //底部菜单框的dom
+
+    // 如果 cookie 有缓存 current_point ,则设置它
+    if(getCookie('lng')){
+        current_point.lng = getCookie('lng');
+        current_point.lat = getCookie('lat');
+        // debug("使用的是缓存经纬度 : " + getCookie('lng') + " , " + getCookie('lat'));
+    }
+    if(getCookie('city', true)){
+        city = getCookie('city', true);
+        // debug("使用的是缓存数据city : " + getCookie('city'));
+    }
+
+    // 渲染主流程设置
+    var load_id = setInterval(function() {
+        // 20s 钟加载不出来的话，就reload吧
+        if(loading_time > 400){
+            clearInterval(load_id);
+//            location.reload();
+            return ;
+        }else{
+            // 当第一次加载时，尝试去获取地理位置
+            if (loading_time == 1) {
+                // 使用高德定位
+                var map = new AMap.Map('container', {resizeEnable: true});
+
+                map.plugin('AMap.Geolocation', function () {
+                    // 获取高德地图经纬度
+                    var gd_geolocation = new AMap.Geolocation({
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        buttonOffset: new AMap.Pixel(10, 20),
+                        zoomToAccuracy: true,
+                        buttonPosition: 'RB'
+                    });
+                    gd_geolocation.getCurrentPosition();
+                    AMap.event.addListener(gd_geolocation, 'complete', function (data) {
+                        time_debug(start_time, '获取地理位置的时间:');
+                        // debug("高德经纬度: " + data.position.lng + " , " + data.position.lat);
+
+                        // 获取城市定位
+                        map.plugin('AMap.Geocoder', function () {
+                            // 逆地理编码 实例化Geocoder
+                            geocoder = new AMap.Geocoder({});
+                            var lnglatXY = [data.position.lng, data.position.lat];//
+							//lnglatXY = [114.039183,22.630688];
+							//地图上所标点的坐标
+                            geocoder.getAddress(lnglatXY, function (status, result) {
+                                if (status === 'complete' && result.info === 'OK') {
+                                    time_debug(start_time, '获得当前城市时间');
+                                    //即 result.regeocode.formattedAddress
+                                    city = result.regeocode.addressComponent.city;
+                                    if (!city) {
+                                        city = result.regeocode.addressComponent.province;
+                                    }
+                                    // 缓存城市
+                                    setCookie('city', city, cookie_expires, true);
+                                    console.log("高德获得当前城市:" + city);
+                                } else {
+                                    console.log("城市 : 无法获取当前城市");
+                                }
+                            });
+                        });
+
+                        // 使用百度接口将高德地图经纬度转换成百度经纬度
+                        var ggPoint = new BMap.Point(data.position.lng, data.position.lat);
+                        var convertor = new BMap.Convertor();
+                        var pointArr = [];
+                        pointArr.push(ggPoint);
+                        convertor.translate(pointArr, 3, 5, function (baidu_point) {
+                            // debug("百度: " + baidu_point.lng + " , " + baidu_point.lat);
+                            baidu_point = baidu_point.points[0];
+                            current_point = baidu_point;
+                            init_point = current_point;
+                            // 缓存经纬度
+                            setCookie('lng', current_point.lng, cookie_expires);
+                            setCookie('lat', current_point.lat, cookie_expires);
+                        });
+                    });
+                    AMap.event.addListener(gd_geolocation, 'error', function (e) {
+                        console.log(e);
+                    });
+                });
+
+            }
+            // 加载成功了,百度地图
+            if(current_point && city){
+                $('#container').height($(window).height());
+                var map = new BMap.Map('container');
+                map.centerAndZoom(current_point, 15);
+                map.enableScrollWheelZoom();
+                load_list(page, current_point, city, map, true);
+                map.addEventListener('dragend',function(){
+                    $('.icon-location').show();
+                    var center = map.getCenter();
+                    var zoom = map.getZoom();
+                    map.centerAndZoom(new BMap.Point(center.lng,center.lat), zoom);
+                    map.clearOverlays();
+                    page = 0;
+                    render_sids = [];
+                    render_shop_ids = [];
+                    $("#list").html('');
+                    load_list(page, center, city, map, true);
+                });
+                clearInterval(load_id);
+                return;
+            }else{
+                loading_time ++;
+            }
+        }
+    }, 50);
+
+    function load_list(page_index, current_point, city, map, ismap){
+        if(!ismap){
+			if(is_loading_end){
+				return;
+			}else{
+				if(page_index > 0){
+					$("#load-img").css("display","block");
+				}
+			}
+        }
+        var data = {
+            'q' : city,
+            'filter' : 'enable:1',
+            'geotable_id' : "{GEOTABLE_ID}",
+            'sortby' : 'distance:1',
+            'radius' : 50000,
+            'bounds' : '',
+            'ak' : "{BAIDU_MAP_AK}",
+            'location' : current_point.lng + ',' + current_point.lat,
+			'page_index' : page_index,
+			'page_size' : page_size, //最多显示20个点
+        };
+        $.ajax({
+            type: "get",
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            url: "//api.map.baidu.com/geosearch/v3/nearby?callback=?",
+            data: data,
+            success: function (data) {
+                if (isset(data.status) && data.status == 0) {
+					total = data.total; // 获取百度数据站点总数
+                    var stations = data.contents;
+                    var station_ids = {};
+                    var station_ids_str = '';
+                    for(var x in stations){
+                        if(stations[x]['sid']){
+                            station_ids[x] = stations[x]['sid'];
+                            station_ids_str += stations[x]['sid'] + ',';
+                        }
+                    }
+                    // 获取数据库站点数据
+                    $.ajax({
+                        type:'get',
+                        contentType:"application/json;charset=utf-8",
+                        dataType:"json",
+                        url:'/index.php?mod=activity&act=list',
+                        data:{shop_station_ids : station_ids},
+                        success:function(stations_db)
+                        {
+                            for(var x in stations){
+                                var sid = stations[x].sid;
+                                for(var y in stations_db){
+                                    if(sid == stations_db[y].id){
+                                        var sb = stations_db[y];
+                                        var point = new BMap.Point(stations[x].location[0], stations[x].location[1]);
+//                                        points.push(point);
+                                        stations[x].distance = getDistance(point, init_point);
+                                        for(var i in sb){
+                                            stations[x][i] = sb[i];
+                                        }
+                                    }
+                                }
+                                if(!stations[x].id){
+                                    delete stations[x];
+                                    continue;
+                                }
+                            }
+							if(ismap){
+							    show_map(stations, map);
+                                is_loading_end = false;
+                                $("#load-txt").css("display","none");
+                            }
+                            $("#load-img").css("display","none");
+                            $(".address-layer .loading").css("display","none");
+                            show_list(stations);
+                            if(page_size * page >= total && isList){
+                                $("#load-txt").css("display","block");
+                                is_loading_end = true;
+                            }
+                            is_scroll_load_end = true;
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+    function jsonSort(array, field, reverse)
+    {
+        if (array.length < 2 || !field || typeof array[0] !== "object") {
+            return array;
+        }
+        array.sort(function (x, y) {
+            var cb_num = x[field] - y[field];
+            return cb_num;
+        });
+        if (reverse) {
+            array.reverse();
+        }
+        return array;
+    }
+
+    // 实际渲染站点
+    function show_map(stations, map){
+        var myIcon = new BMap.Icon("http://oug5q3p1s.bkt.clouddn.com/icon-position.png", {});
+        myIcon.setSize(new BMap.Size(40, 40));//图片可视区域大小
+        myIcon.setImageSize(new BMap.Size(40, 40));//图标大小
+        myIcon.setAnchor(new BMap.Size(22,37));//图标定位点相对于其左上角的偏移值
+
+        var selectedIcon = new BMap.Icon("http://oug5q3p1s.bkt.clouddn.com/selected-point.png", {});
+        selectedIcon.setSize(new BMap.Size(40, 40));
+        selectedIcon.setImageSize(new BMap.Size(40, 40));
+        selectedIcon.setAnchor(new BMap.Size(20,25));
+
+        marker = new BMap.Marker(init_point,{icon:myIcon});
+        marker.setTop(true);
+        map.addOverlay(marker);//标注添加到地图
+		for(var i in stations){
+			point = new BMap.Point(stations[i].location[0], stations[i].location[1]);
+			var myIcon = new BMap.Icon("http://oug5q3p1s.bkt.clouddn.com/point.png", {});
+            myIcon.setSize(new BMap.Size(40, 40));
+            myIcon.setImageSize(new BMap.Size(40, 40));
+			myIcon.setAnchor(new BMap.Size(20,25));
+
+			marker = new BMap.Marker(point,{icon:myIcon});
+			map.addOverlay(marker);
+			addClickHandler(stations[i],marker);
+		}
+
+		function addClickHandler(station, marker){
+			marker.addEventListener('click',function(e){
+                if(marker.point == marker_point){
+                    return;
+                }
+				$('.umbrella-borrow').hide();
+                $('#station-title').text(station.title);
+                $('#usable').text(station.usable);
+                $('#empty').text(station.empty);
+                $('#distance').text(station.distance);
+                $('#addr').text(station.address);
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url:'/index.php?mod=activity&act=change_coordinates',
+                    data: {lng:station.location[0],lat:station.location[1]},
+                    success: function(data){
+                        if(data.status && data.status == 1){
+                            shop_point = data.locations.split(",");
+                            $("#goto").unbind();
+                            $("#goto").click(function(){
+                                var name = station.title;
+                                var address = station.address;
+                                direction(shop_point, name);
+                            });
+                        }
+                    }
+                });
+				var original = marker.getIcon();
+				marker.setIcon(selectedIcon);
+				marker_point = marker.point;
+                showMenu();
+				var infoWindow = new BMap.InfoWindow('', {
+                });
+
+				infoWindow.addEventListener('close', function(){
+                    marker.setIcon(original);
+                    if($('#station-title').text() == station.title){
+                    	hideMenu();
+                    	$('.umbrella-borrow').show();
+                    	marker_point = false;
+                    }
+				})
+				var p = e.target;
+				var pt = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+				map.openInfoWindow(infoWindow,pt);
+
+			})
+		}
+    }
+
+    function direction(shop_point, name){
+        var map = new AMap.Map("mapContainer", {
+            zoom: 2,
+            center:[shop_point[0],shop_point[1]]
+        });
+        // 高德地图到这里去
+        marker = new AMap.Marker({
+            map:map,
+            position:[shop_point[0],shop_point[1]]
+        });
+        marker.markOnAMAP({
+            'name':name,
+            position:marker.getPosition()
+        });
+    }
+
+    function show_list(stations)
+    {
+        jsonSort(stations, "distance", false);
+        for(var i in stations){
+            stations[i].distance = distanceUnit(stations[i].distance);
+        }
+        $('#list').css('text-align', 'left');
+        for(var i in stations){
+            if(!isList){
+                return;
+			}
+            if(render_sids.indexOf(stations[i]['sid']) != -1){
+                continue;
+            }
+            if( stations[i]['shopid'] != 0 && render_shop_ids.indexOf(stations[i]['shopid']) != -1){
+                continue;
+                debug(stations[i]['shopid']);
+                debug(render_shop_ids.indexOf(stations[i]['shopid']));
+            }
+            var c = '';
+            c += '<li>';
+            c += 	'<a href="javascript:;" onclick="show_detail(' + stations[i].id + ',' + stations[i].location[0] + ',' + stations[i].location[1]+ ')">';
+            c += 	'<div class="business-img"><img src="'+stations[i].shoplogo+'" onerror="this.src=\'/static/images/fail-logo.png\'"/></div>';
+            c += 		'<div class="address-txt" style="width:'+address_txt_width+'px">';
+            c += 			'<h2>';
+            c += 			    '<span>'+stations[i].title+'</span>';
+            c += 				'<em>'+stations[i].distance+'</em>';
+            c += 			'</h2>';
+            c += 			'<div class="umbrella-surplus">';
+            c += 				'<div class="umbrella-color">';
+            c += 					'<img src="static/images/san.png" onerror="this.src=\'/static/images/fail-logo.jpg\'"/>';
+            c += 					'<div class="umbrella-txt">';
+            c += 						'<h4>';
+            c += 							'<i class="icon-borrow"></i>&nbsp;';
+            c += 							'<span>可借</span>&nbsp;&nbsp;';
+            c += 							'<span>'+stations[i].usable+'</span>';
+            c += 						'</h4>';
+            c += 						'<h4>';
+            c += 							'<i class="icon-return"></i>&nbsp;<span>可还</span>&nbsp;&nbsp;<span>'+stations[i].empty+'</span>';
+            c += 						'</h4>';
+            c += 					'</div>';
+            c += 				'</div>';
+            c += 			'</div>';
+            c += 			'<p>'+stations[i].address+'</p>';
+            c += 		'</div>';
+            c += 		'<div class="clear"></div>';
+            c += 	'</a>';
+            c += '</li>';
+            $("#list").append(c);
+            render_sids.push(stations[i]['sid']);
+            render_shop_ids.push(stations[i]['shopid']);
+        }
+    }
+    function showMenu() {
+        slipBoxDom.removeClass('noAnimate');
+        slipBoxDom.addClass('animate');
+    }
+    function hideMenu() {
+        slipBoxDom.removeClass('animate');
+        slipBoxDom.addClass('noAnimate');
+    }
+    function degreeToRad (degree){
+		 return Math.PI * degree/180;
+	}
+    function _getRange(v, a, b){
+		 if(a != null){
+			   v = Math.max(v, a);
+			 }
+		 if(b != null){
+			   v = Math.min(v, b);
+			 }
+		 return v;
+	 }
+    function _getLoop(v, a, b){
+		 while( v > b){
+		   v -= b - a
+		 }
+		 while(v < a){
+			   v += b - a
+			 }
+		 return v;
+	 }
+	function getDistance(point1, point2){
+		 if(!(point1 instanceof BMap.Point) || !(point2 instanceof BMap.Point)){
+			 return 0;
+		 }
+		 point1.lng = _getLoop(point1.lng, -180, 180);
+		 point1.lat = _getRange(point1.lat, -74, 74);
+		 point2.lng = _getLoop(point2.lng, -180, 180);
+		 point2.lat = _getRange(point2.lat, -74, 74);
+		 var x1, x2, y1, y2;
+		 x1 = degreeToRad(point1.lng);
+		 y1 = degreeToRad(point1.lat);
+		 x2 = degreeToRad(point2.lng);
+		 y2 = degreeToRad(point2.lat);
+		 return EARTHRADIUS * Math.acos((Math.sin(y1) * Math.sin(y2) + Math.cos(y1) * Math.cos(y2) * Math.cos(x2 - x1)));
+	 }
+
+	 function show_detail(shop_station_id, lng, lat){
+	    $('.address-layer').hide();
+	    $('.business-detail').show();
+	 }
+</script>
+<script>
+    var scan = function(){
+        if (isAlipay()) {
+            document.addEventListener('AlipayJSBridgeReady', function () {
+                if(navigator.userAgent.indexOf("AlipayClient")===-1){
+                    alert('请在支付宝钱包内运行');
+                }else{
+                    if((Ali.alipayVersion).slice(0,3)>=8.1){
+                        Ali.scan({
+                            type: 'qr'
+                        }, function(result) {
+                            if(result.errorCode){
+                            }else{
+                                var result = result.qrCode;
+                                var codResult = encodeURI(result);
+                                window.location.href=result;
+                            }
+                        });
+                    }else{
+                        Ali.alert({
+                            title: '亲',
+                            message: '请升级您的钱包到最新版',
+                            button: '确定'
+                        });
+                    }
+                }
+            }, false);
+		}
+    };
+    $(".umbrella-borrow").click(scan);
+</script>
+</body></html>

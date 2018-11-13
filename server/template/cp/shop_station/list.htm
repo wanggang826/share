@@ -1,0 +1,249 @@
+{template jjsan:cp/common/header}
+<script src="http://cdn.bootcss.com/jquery.devbridge-autocomplete/1.2.27/jquery.autocomplete.js"></script>
+<fieldset class="fieldsetclass shop-station-list">
+	<legend> 查询 </legend>
+	<form method="GET" action="index.php">
+		<input type="hidden" name="mod" value="{$mod}">
+		<input type="hidden" name="act" value="{$act}">
+		<input type="hidden" name="opt" value="{$opt}">
+		{template jjsan:cp/common/province_city_area}
+		<div class="layui-form-item">
+			<h4>名称关键字：</h4>
+			<div class="layui-input-inline">
+				<input type="text" name="keyword" value="{$_GET['keyword']}" id="autocomplete" class="ui-input-longSize"/>
+				<input type="hidden" name="shop_station" id="shop_station" value="{$_GET['shop_station']}">
+			</div>
+			<h4>站点ID：</h4>
+			<div class="layui-input-inline">
+				<input type="text" name="sid" value="{$_GET['sid']}" class="ui-input-longSize"/>
+			</div>
+			<h4>状&nbsp;&nbsp;态：</h4>
+			<div class="layui-input-inline">
+				<select name="status">
+					<option value="-1">全部</option>
+					<option value="0" {echo $_GET['status'] == '0'? 'selected' : '';}>已下线</option>
+					<option value="1" {echo $_GET['status'] == '1'? 'selected' : '';}>在线</option>
+				</select>
+			</div>
+		</div>
+		<div>
+			<button class="layui-btn">{lang jjsan:station_search}</button>
+		</div>
+	</form>
+</fieldset>
+<div>共{$stations['count']}条记录</div>
+<table class="layui-table">
+	<thead>
+	<tr>
+		<th> ID </th>
+		<th> lbsid </th>
+		<th> {lang jjsan:station_title} </th>
+		<th width="20%"> {lang jjsan:address} </th>
+		<th> 摆放位置 </th>
+		<th> 站点ID </th>
+		<th> 所属商铺</th>
+		<th> 归属</th>
+		<th> 负责人</th>
+		<th> {lang jjsan:shop_station_status} </th>
+		<th> 收费策略 </th>
+		<!--{if $cdo['shop_station_remove']}-->
+		<th> {lang jjsan:shop_station_remove} </th>
+		<!--{/if}-->
+		<!--{if $cdo['shop_station_replace']}-->
+		<th> {lang jjsan:shop_station_replace} </th>
+		<!--{/if}-->
+		<!--{if $cdo['shop_station_go_up']}-->
+		<th> {lang jjsan:shop_station_go_up} </th>
+		<!--{/if}-->
+		<!--{if $cdo['setting_strategy']}-->
+		<th> 设置 </th>
+		<!--{/if}-->
+	</tr>
+	</thead>
+	<tbody>
+	<!--{loop $stations['data'] $s}-->
+	<tr>
+		<td> {$s['id']} </td>
+		<td> {$s['lbsid']} </td>
+		<td> {$s['title']} </td>
+		<td> {$s['address']} </td>
+		<td> {$s['desc']} </td>
+		<td>
+			<!--{if $s['station_id']}-->
+			<a href="/index.php?mod=cp&act=station&opt=list&sid={$s['station_id']}">{$s['station_id']}</a>
+			<!--{else}-->
+			无
+			<!--{/if}-->
+		</td>
+		<td>
+			{echo $s['shopid'] ? : '无'}
+			<br>
+			<!--{if $s['shopname']}-->
+				<a href="/index.php?mod=cp&act=shop&opt=list&&keyword={$s['shopname']}">{$s['shopname']}</a>
+				<!--{if $cdo['bind']}-->
+				<button class="layui-btn layui-btn-warm layui-btn-mini bind-shop" data-id="{$s['id']}">重设</button>
+				<!--{/if}-->
+				<!--{if $cdo['unbind']}-->
+				<a href="index.php?mod={$mod}&act={$act}&opt=setting&do=unbind&shop_station_id={$s['id']}&page={$page}&shopid={$s['shopid']}" class="unbind-btn">解绑</a>
+				<!--{/if}-->
+			<!--{else}-->
+				<!--{if $cdo['bind']}-->
+				<button class="layui-btn layui-btn-mini layui-btn-normal bind-shop" data-id="{$s['id']}">设置</button>
+				<!--{/if}-->
+			<!--{/if}-->
+		</td>
+		<td>{$s['seller_role_name']}</td>
+		<td>{$s['seller_name']}</td>
+		<!--{if $s['status']}-->
+		<td> <span style="color: green">在线</span> </td>
+		<!--{else}-->
+		<td> <span style="color: red">已下线</span> </td>
+		<!--{/if}-->
+		<td>
+			{$s['fee_setting_name']}
+		</td>
+		<!--{if $s['station_id']}-->
+			<!--{if $cdo['shop_station_remove']}-->
+				<td> <button class="layui-btn layui-btn-mini"><a href="#" onclick="removeShopStation({$s['id']});" style="color:white"><span>撤机</span></a></button> </td>
+			<!--{/if}-->
+			<!--{if $cdo['shop_station_replace']}-->
+				<td> <button class="layui-btn layui-btn-mini shop-station-replace" data-id="{$s['id']}">换机</button> </td>
+			<!--{/if}-->
+			<!--{if $cdo['shop_station_go_up']}-->
+				<td> --- </td>
+			<!--{/if}-->
+		<!--{else}-->
+			<!--{if $cdo['shop_station_remove']}-->
+				<td> --- </td>
+			<!--{/if}-->
+			<!--{if $cdo['shop_station_replace']}-->
+				<td> --- </td>
+			<!--{/if}-->
+			<!--{if $cdo['shop_station_go_up']}-->
+				<td> <button class="layui-btn layui-btn-mini shop_station_go_up" data-id="{$s['id']}">上机</button> </td>
+			<!--{/if}-->
+		<!--{/if}-->
+		<!--{if $cdo['setting_strategy']}-->
+		<td>
+			<button class="layui-btn layui-btn-normal layui-btn-success layui-btn-mini setting" data-id="{$s['id']}">设置</button>
+		</td>
+		<!--{/if}-->
+	</tr>
+	<!--{/loop}-->
+	</tbody>
+</table>
+{$pagehtm}
+<script>
+	$.getJSON('/index.php?mod=api&act=station&opt=get_shop_station_list' + '&city=' + $('#city').val(), function(data) {
+		stations_array = data.suggestions;
+		autocomplete_title(stations_array);
+	});
+
+	$('#city').on('change', function () {
+		$.ajax({
+			url: '/index.php?mod=api&act=station&opt=get_shop_station_list',
+			dataType: "json",
+			data: {city: $(this).val()},
+		})
+		.done(function(data) {
+			stations_array = data.suggestions;
+			autocomplete_title(stations_array);
+		});
+	});
+
+	function autocomplete_title(stations_array) {
+		$('#autocomplete').autocomplete({
+			// serviceUrl : '/index.php?mod=api&act=station&opt=get_shop_station_list',
+			lookup : stations_array,
+			minChars : 0,
+			onSelect: function (suggestion) {
+				$('#shop_station_id').val(suggestion.data);
+				console.log('shop_station_id:' + suggestion.data + ', title:' + suggestion.value);
+			},
+		});
+
+		$('#autocomplete').on('focus', function (){
+			$(this).autocomplete().onValueChange();
+		});
+	}
+
+	layui.use(['layer', 'form'], function(){
+		var layer = layui.layer;
+		//　绑定商铺
+		$(".bind-shop").click(function(){
+			layer.open({
+				type: 2,
+				title: '绑定商铺',
+				maxmin: true,
+				area : ['1000px' , '700px'],
+				content: "index.php?mod={$mod}&act={$act}&opt=setting&do=bind&shop_station_id="+$(this).data('id')
+			});
+		});
+
+        //　设置策略
+        $(".setting-strategy").click(function(){
+            layer.open({
+                type: 2,
+                title: '设置策略',
+                maxmin: true,
+                area : ['440px' , '500px'],
+                content: "index.php?mod={$mod}&act={$act}&opt=setting&do=setting_strategy&shop_station_id="+$(this).data('id')
+            });
+        });
+
+        $(".shop-station-replace").click(function() {
+            layer.open({
+                type: 2,
+                title: '换机操作',
+                maxmin: true,
+                area: ['350px', '350px'],
+                content: 'index.php?mod={$mod}&act={$act}&opt=show_shop_station_replace&shop_station_id='+$(this).data('id'),
+            });
+        });
+
+        $(".shop_station_go_up").click(function() {
+            layer.open({
+                type: 2,
+                title: '上机操作',
+                maxmin: true,
+                area: ['350px', '350px'],
+                content: 'index.php?mod={$mod}&act={$act}&opt=show_shop_station_go_up&shop_station_id='+$(this).data('id'),
+            });
+        });
+
+        $(".setting").click(function(){
+            layer.open({
+                type: 2,
+                title: '设置',
+                maxmin: true,
+                area : ['700px' , '600px'],
+                content: "index.php?mod={$mod}&act={$act}&opt=setting&do=setting_strategy&shop_station_id="+$(this).data('id')
+            });
+        });
+	});
+
+	function removeShopStation(shop_station_id) {
+		if(confirm("确定撤机？")) {
+			directive('shop_station_remove', shop_station_id);
+		}
+	}
+
+	function directive(opt, shop_station_id) {
+		var url = 'index.php?mod=cp&act=shop_station';
+		$.ajax({
+			url: url,
+			dataType : 'JSON',
+			data: {"opt": opt, "shop_station_id" : shop_station_id},
+		})
+		.done(function(data) {
+			console.log(data);
+			alert(data.errmsg);
+			location.reload();
+		})
+		.fail(function() {
+			console.log("error");
+		});
+	}
+</script>
+
+{template jjsan:cp/common/footer}

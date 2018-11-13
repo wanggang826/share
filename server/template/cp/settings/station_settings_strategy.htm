@@ -1,0 +1,73 @@
+<!--{if $cdo['add']}-->
+<fieldset class="fieldsetclass">
+	<legend>操作</legend>
+	<button class="item-update layui-btn" id="add-strategy"> {$cdo['add']} </button>
+</fieldset>
+<!--{/if}-->
+<table class="layui-table">
+	<thead>
+	<tr>
+		<th width="10%">ID</th>
+		<th width="20%">策略名称</th>
+		<th>操作</th>
+	</tr>
+	</thead>
+	<tbody>
+		<!--{loop $all_settings $setting}-->
+		<tr>
+			<td>{$setting['id']}</td>
+			<td>{$setting['name']}</td>
+			<td>
+				<!--{if $cdo['edit']}-->
+				<button class="edit_role layui-btn layui-btn-normal layui-btn-small edit-strategy" data-id="{$setting['id']}">{$cdo['edit']}</button>
+				<!--{/if}-->
+				<!--{if $cdo['delete']}-->
+				<button class="edit_role layui-btn layui-btn-danger layui-btn-small delete-strategy" data-id="{$setting['id']}">{$cdo['delete']}</button>
+				<!--{/if}-->
+			</td>
+		</tr>
+		<!--{/loop}-->
+	</tbody>
+</table>
+{$pagehtm}
+<script>
+	layui.use('layer', function(){
+            var layer = layui.layer;
+            //　添加按钮
+            $("#add-strategy").click(function(){
+                layer.open({
+                    type: 2,
+                    title: '添加策略',
+                    maxmin: true,
+                    area : ['500px' , '550px'],
+                    content: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=add'
+                });
+            });
+            //　编辑按钮
+            $(".edit-strategy").click(function(){
+                layer.open({
+                    type: 2,
+                    title: '编辑策略',
+                    maxmin: true,
+                    area : ['500px' , '550px'],
+                    content: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=edit&station_strategy_id='+$(this).data('id')
+                });
+            });
+
+            $('.delete-strategy').click(function(){
+                $.ajax({
+                    url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=delete&station_strategy_id='+$(this).data('id'),
+                    data: {},
+                    success: function(e){
+                        if(e.code == 0) {
+                            layer.msg(e.msg, {icon: 1}, function(){
+                                window.location.reload();
+                            });
+                        } else {
+                            layer.msg(e.msg, {icon: 2, time: 3000});
+                        }
+                    }
+                });
+			})
+        });
+</script>

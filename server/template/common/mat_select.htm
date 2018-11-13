@@ -1,0 +1,24 @@
+{template jjsan:cp/common/header}
+
+<section class="matlist"> 
+	<!--{loop $mats $id $mat}-->
+	<div class="imgbody">
+		<a href="javascript:;" onclick="addmattobox({echo $start+$id;},{$simple})">
+			<img id="mat{echo $start+$id;}" src="{$mat['path']}" alt="{$mat['fn']}">
+		</a> <br>
+		<a href="{$mat['url']}" target="_blank">{$mat['name']}</a>
+	</div>
+	<!--{/loop}-->
+	<p>
+	<!-- {if $hasPre} -->
+		<a href="index.php?mod=cp&act=common&opt=getmatlist&cur=$page&go=prev&simple=$simple" onclick="ajaxget(this.href, 'matselectbox');return false;">{lang jjsan:prev_page}</a>
+	<!-- {/if} -->
+	<!-- {if $hasPre && $hasNext} -->|
+	<!-- {/if} -->
+	<!-- {if $hasNext} -->
+		<a href="index.php?mod=cp&act=common&opt=getmatlist&cur=$page&go=next&simple=$simple" onclick="ajaxget(this.href, 'matselectbox');return false;">{lang jjsan:next_page}</a>
+	<!-- {/if} --> 
+	</p>
+</section>
+
+{template jjsan:cp/common/footer}

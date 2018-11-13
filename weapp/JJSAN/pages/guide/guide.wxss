@@ -1,0 +1,62 @@
+page {
+  width: 100%;
+  height: 100%;
+  font-family: '微软雅黑';
+}
+
+.container {
+  width: 100%;
+}
+
+
+.content {
+  padding: 30rpx 0;
+}
+
+.content >view {
+  width: 100%;
+}
+
+.title {
+  margin-bottom: 30rpx;
+}
+
+.title >view {
+  width: 210rpx;
+  height: 80rpx;
+  background: #3b3c50;
+  color: #fff;
+  border-top-right-radius: 40rpx;
+  border-bottom-right-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+}
+
+.guide {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+.guide>view, .photo {
+  height: 270rpx;
+  width: 225rpx;
+  border-radius: 20rpx;
+}
+
+.label {
+  height: 50rpx;
+  width: 50rpx;
+  align-self: flex-end;
+}
+
+.line{
+  width: 100%;
+  padding: 0 30rpx;
+  height: 2rpx;
+  border-top: dashed 2rpx #8d8d8d;
+}

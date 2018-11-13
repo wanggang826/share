@@ -1,0 +1,23 @@
+{template jjsan:cp/common/header}
+	<table class="layui-table">
+		<tr>
+			<th>ID</th>
+			<th>角色</th>
+			<th>设置为用户角色</th>
+		</tr>
+		<tr>
+			<td>0</td>
+			<td>普通用户</td>
+			<td><a class="choose" href="index.php?mod={$mod}&act={$act}&opt={$opt}&uid={$uid}&role_id=0&page={$page}&do=set">选择</a></td>
+		</tr>
+	<!--{loop $user_roles $role}-->
+		<tr>
+			<td>{$role['id']}</td>
+			<td>{$role['role']}</td>
+			<td>
+				<a class="choose" href="index.php?mod={$mod}&act={$act}&opt={$opt}&uid={$uid}&role_id={$role['id']}&page={$page}&do=set">选择</a>
+				<a class="choose" style='background-color:red;' href="index.php?mod={$mod}&act={$act}&opt={$opt}&uid={$uid}&role_id={$role['id']}&page={$page}&do=del">删除</a>
+			</td>
+		</tr>
+	<!--{/loop}-->
+{template jjsan:cp/common/footer}

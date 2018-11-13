@@ -1,0 +1,45 @@
+{template jjsan:wechat/common/header}
+<ul class="refund-but">
+	<li class="txstyle"><a href="javascript:;" id="txing" >正在提现</a></li>	
+	<li><a href="/index.php?mod=wechat&act=user&opt=refund_log" id="his">提现记录</a></li>
+</ul>
+<div class="refund">
+	<em>?</em>
+    <a href="/index.php?mod=wechat&act=user&opt=refund_help">退款帮助</a>
+</div>
+<!--{if empty($refundLogs)}-->
+	<div class="refund-nothing">暂无正在提现的记录</div>
+<!--{/if}-->
+<!--{loop $refundLogs $log}-->
+<div class="Present">
+	<div class="Presentmon">
+		<h4>提现金额:<em>{$log['refund']}</em>元</h4>
+    </div>
+	<ul>
+		<li class="active">
+			<i class="icon"></i>
+			<div class="txt">
+				<h4>提现申请成功</h4>
+				<span>正在审核</span>
+				<span class="successTime">{echo date('Y-m-d H:i:s', $log['request_time']);}</span>
+			</div>
+		</li>
+		<li class="{echo empty($log['refund_time'])? '' : 'active'}">
+			<i class="icon"></i>
+			<div class="txt">
+				<h4>审核通过</h4>
+				<span>移交至微信处理</span>
+				<span class="successTime">{echo empty($log['refund_time'])? '' : date('Y-m-d H:i:s', $log['refund_time']);}</span>
+			</div>
+		</li>
+		<li>
+			<i class="icon"></i>
+			<div class="txt">
+				<h4>已到账</h4>
+				<span>押金已原路返回支付账户</span>
+			</div>
+		</li>
+	</ul>
+</div>
+<!--{/loop}-->
+{template jjsan:wechat/common/footer}

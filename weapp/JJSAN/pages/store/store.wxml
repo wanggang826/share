@@ -1,0 +1,37 @@
+<view class="container">
+  <swiper indicator-dots="true" indicator-color="rgba(252,252,252,1)" indicator-active-color="#DEDEDE" circular="true" class="swipe">
+    <block wx:for="{{store.shop_info.carousel}}">
+      <swiper-item>
+        <image src="{{item}}" class="img" />
+      </swiper-item>
+    </block>
+  </swiper>
+  <scroll-view scroll-y="true" class='scroll'>
+    <view class="content" wx:for="{{store.stations}}">
+      <view>
+        <image src="../../assets/img/umbrellaicon.png"></image>
+      </view>
+      <view class="info">
+        <text class="name">{{item.desc}}</text>
+        <view class="detail">
+          <text class="canlend">可借{{item.usable}}</text>
+          <text class="canreturn">可还{{item.empty}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  <view class="information">
+    <view bindtap="goThere">
+      <image src="../../assets/img/address.png"></image>
+      <view class='desc'>{{store.shop_info.address}}</view>
+    </view>
+    <view>
+      <image src="../../assets/img/opentime.png"></image>
+      <view class='desc'>营业时间：{{store.shop_info.stime}}—{{store.shop_info.etime}}</view>
+    </view>
+  </view>
+  <view class="btn">
+    <text class="contact" bindtap="call">联系网点</text>
+    <text class="borrow" bindtap="borrow">立即借伞</text>
+  </view>
+</view>

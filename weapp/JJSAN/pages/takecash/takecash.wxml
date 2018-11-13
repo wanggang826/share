@@ -1,0 +1,30 @@
+<view class="container">
+  <view>
+    <view class="money">
+      <text class="wallet">钱包（元）</text>
+      <text class="allmoney">{{cash.all}}元</text>
+      <view class="detail">
+        <image src="../../assets/img/details.png" bindtap="goDetails"></image>
+      </view>
+    </view>
+    <view class="content">
+      <view class="number">押金 {{cash.deposit}}元</view>
+      <view class="line"></view>
+      <view class="number">余额 {{cash.usablemoney}}元</view>
+    </view>
+  </view>
+  <view class="btn">
+    <form report-submit="true" bindsubmit="takeCash">
+      <button form-type='submit' style="{{cash.usablemoney>0?'background:linear-gradient(#ffd500, #feda02)':'background:#C5C5C5'}}">余额提现</button>
+    </form>
+  </view>
+  <view class="tip">
+    <text class="title">钱包说明</text>
+    <text class="context">1.借伞时，需支付{{cash.deposit_need}}元押金，当钱包余额大于等于{{cash.deposit_need}}元时，自动把{{cash.deposit_need}}元余额转为押金</text>
+    <text class="context">2.还伞后，从押金中扣除伞费用后，并自动将剩余押金转为余额</text>
+    <text class="context">3.提现操作会在下一个工作日受理，提现金额将原路返回到您的账户中，提现进度详见钱包“明细”</text>
+    <view class="context">4.如果需要其他帮助，欢迎致电客服
+      <view class="phone" bindtap='call'>400-900-8113</view>
+    </view>
+  </view>
+</view>

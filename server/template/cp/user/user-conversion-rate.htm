@@ -1,0 +1,37 @@
+<style>
+    .sub-text{
+        font-size:12px;
+        font-weight: 100;
+        color:grey;
+    }
+</style>
+<form method="get">
+	<table cellpadding="0" cellspacing="0" class="normal_table">
+		<tr>
+			<th>日期</th>
+			<th>当日用户数</th>
+			<th>当日订单数</th>
+			<th>当日消费订单数</th>
+			<th>订单转化率<br>
+                <span class="sub-text">当日订单数 / 当日用户数</span>
+            </th>
+			<th>
+                消费转化率<br>
+                <span class="sub-text">当日消费订单数 / 当日订单数</span>
+            </th>
+		</tr>
+		<!--{loop $users $u}-->
+		<tr>
+            <td>$u['create_time']</td>
+            <td>$u['user_count']</td>
+            <td>$u['order_count']</td>
+            <td>$u['order_fee_count']</td>
+            <td>{$u['order_conversion_rate']} </td>
+            <td>{$u['order_fee_conversion_rate']}</td>
+		</tr>
+		<!--{/loop}-->
+	</table>
+</form>
+{$pagehtm}
+<script>
+</script>

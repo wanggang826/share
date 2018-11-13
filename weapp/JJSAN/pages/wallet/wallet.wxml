@@ -1,0 +1,18 @@
+<view class="container">
+  <scroll-view scroll-y="true" class="scroll" bindscrolltolower="getMore">
+    <view class="content" wx:for="{{items}}">
+      <view>
+        <view class="title">
+          <text class="name">{{item.name}}</text>
+          <text class="prompt" wx:if="{{item.type==3||item.type==4}}" style="{{item.type==3?'background:#E82801B':'background:#349919'}}">{{item.type==3?'等待到账':'已到账'}}</text>
+        </view>
+        <view class="time">{{item.time}}</view>
+      </view>
+      <view class="money">{{item.amount}}元</view>
+    </view>
+    <view class="tip" wx:if="{{items.length==0&&number>1}}">
+      <image src="../../assets/img/noresult.png"></image>
+      <text>暂无明细</text>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,46 @@
+{template jjsan:cp/common/header}
+<section style="margin: 30px auto; width: 550px">
+	<section>
+		<div style="padding-left: 80px">
+			<input type="file" name="file" id="file" style="border: 0px solid black;" required>
+			<input class="layui-btn submitbutton" type="submit" value="上传">
+		</div>
+	</section>
+</section>
+{template jjsan:cp/common/footer}
+
+<script>
+    layui.use(['layer'], function(){
+        $('.submitbutton').click(function(){
+            var form_data = new FormData();
+            form_data.append('myfile',$('#file')[0].files[0]);
+            if($('#file')[0].files[0] == undefined){
+                layer.msg('请选择文件', {icon: 2});
+                return;
+            }
+
+            $.ajax({
+                url: "{$action}",
+                type: 'post',
+                data: form_data,
+                contentType: false,
+                processData: false,
+                success: function(e) {
+                    if(e.code == 0) {
+                        layer.msg(e.msg, {icon: 1}, function(){
+                            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                            parent.location.reload(); // 父页面刷新
+                        });
+                    } else {
+                        layer.msg(e.msg, {icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('内部错误', {icon: 2}, function(){
+                    });
+                }
+            })
+        })
+
+    })
+</script>

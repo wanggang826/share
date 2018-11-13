@@ -1,0 +1,58 @@
+{template jjsan:cp/common/header}
+<div class="layui-form">
+	<div class="layui-form-item">
+		<label class="layui-form-label">商铺类型:</label>
+		<div class="layui-input-inline">
+			<input type="text" name="type" placeholder="请在此输入商铺类型名称" class="layui-input type">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">默认图标:</label>
+		<div class="layui-input-inline">
+			<input type="file" name="logo" class="logo" style="border:0px">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label"></label>
+		<div class="layui-input-inline">
+			<button class="layui-btn submit">添加</button>
+		</div>
+	</div>
+</div>
+<script>
+layui.use(['layer'], function(){
+	var layer = layui.layer;
+});
+
+$('.submit').click(function(){
+    if($('.type').val() == ''){
+        layer.msg('请填写商铺类型名称', {icon: 2});
+        return;
+    } else if($('.logo')[0].files[0] == undefined){
+        layer.msg('请选择商铺类型logo', {icon: 2});
+        return;
+    }
+    var form_data = new FormData();
+    form_data.append('type', $('.type').val());
+    form_data.append('logo', $('.logo')[0].files[0]);
+	$.ajax({
+		url: 'index.php?mod={$mod}&act={$act}&opt={$opt}',
+		type: 'POST',
+		data: form_data,
+        contentType: false,
+        processData: false,
+		success: function(e) {
+			if(e.code == 0) {
+				layer.msg(e.msg, {icon: 1}, function(){
+					parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+					parent.location.reload(); // 父页面刷新
+				});
+			} else {
+				layer.msg(e.msg, {icon: 2});
+			}
+		}
+
+	})
+});
+</script>
+{template jjsan:cp/common/footer}

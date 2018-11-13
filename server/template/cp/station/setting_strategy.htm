@@ -1,0 +1,40 @@
+{template jjsan:cp/common/header}
+<div class="layui-form">
+	<div class="layui-form-item" style="padding: 20px 100px">
+		<label class="layui-form-label">同步策略:</label>
+		<div class="layui-input-inline">
+			<select name="strategy_id" class="strategy-id">
+				<option value="0">全局配置</option>
+				<!--{loop $settings $setting}-->
+				<option value="{$setting['id']}" {echo $stationSettingId == $setting['id'] ? 'selected':'';}>{$setting['name']}</option>
+				<!--{/loop}-->
+			</select>
+		</div>
+	</div>
+	<div class="ui-btn-center" style="margin-top: 160px;">
+		<input class="layui-btn submit" type="submit" value="更新">
+	</div>
+</div>
+<script>
+	layui.use(['layer', 'form'], function(){})
+</script>
+<script>
+$('.submit').click(function(){
+	$.ajax({
+		url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do={$do}',
+		type: 'POST',
+		data: {sid: "{$sid}", strategy_id: $(".strategy-id").val()},
+		success: function(e) {
+            if(e.code == 0) {
+                layer.msg(e.msg, {icon: 1}, function(){
+                    parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                    parent.location.reload(); // 父页面刷新
+                });
+            } else {
+                layer.msg(e.msg, {icon: 2});
+            }
+		},
+	})
+})
+</script>
+{template jjsan:cp/common/footer}

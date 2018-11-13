@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="title">
+    <image src="{{user.img}}"></image>
+    <text>{{user.name}}</text>
+  </view>
+  <view class="content">
+    <form report-submit="true" bindsubmit="goWallet">
+      <button form-type='submit' class="list important">
+        <image src="../../assets/img/wallet.png" class="icon"></image>
+        <view>
+          <text>我的钱包</text>
+          <text class="money">{{cash.all}}元</text>
+        </view>
+        <image src="../../assets/img/detail.png" class="end"></image>
+      </button>
+    </form>
+    <form report-submit="true" bindsubmit="goHistory">
+      <button form-type='submit' class="list important">
+        <image src="../../assets/img/history.png" class="icon"></image>
+        <view>
+          <text>借还记录</text>
+          <view class="using" wx:if="{{cash.unreturn>0}}">{{cash.unreturn}}</view>
+        </view>
+        <image src="../../assets/img/detail.png" class="end"></image>
+      </button>
+    </form>
+    <form report-submit="true" bindsubmit="goHelp">
+      <button form-type='submit' class="list usual">
+        <image src="../../assets/img/help.png" class="icon"></image>
+        <text>使用帮助</text>
+        <image src="../../assets/img/detail.png" class="end"></image>
+      </button>
+    </form>
+    <form report-submit="true" bindsubmit="goAgreement">
+      <button form-type='submit' class="list usual">
+        <image src="../../assets/img/agreement.png" class="icon"></image>
+        <text>相关协议</text>
+        <image src="../../assets/img/detail.png" class="end"></image>
+      </button>
+    </form>
+  </view>
+</view>

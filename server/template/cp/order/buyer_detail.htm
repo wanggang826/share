@@ -1,0 +1,27 @@
+	<ul>
+		<li>
+			<strong>{lang jjsan:usablemoney}</strong>: {$user['usablemoney']}
+		</li>
+		<li>
+			<strong>{lang jjsan:deposit}</strong>: {$user['deposit']}
+		</li>
+		<li>
+			<strong>{lang jjsan:refund_request}</strong>: {$user['refund']}
+		</li>
+		<li>
+			<strong>{lang jjsan:user_platform}</strong>:
+			<!--{if $user['platform'] == PLATFORM_WX}-->
+			{lang jjsan:wx_platform}
+			<!--{elseif $user['platform'] == PLATFORM_ALIPAY}-->
+			{lang jjsan:alipay_platform}
+			<!--{else}-->
+			未知平台
+			<!--{/if}-->
+		</li>
+		<li>
+			<strong>openid</strong>: {$user['openid']}
+		</li>
+		<li>
+			<strong>{lang jjsan:headimg}</strong>: <img src="{$user['headimg']}" width="50px" height="50px" onerror="this.src='{APPROOT}static/images/default.png'"/>
+		</li>
+	</ul>

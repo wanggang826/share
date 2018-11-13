@@ -1,0 +1,61 @@
+<fieldset class="fieldsetclass">
+   	<legend>操作</legend>
+        <button class="item-update layui-btn add-user">添加人员</button>
+</fieldset>
+<table class="layui-table">
+    <thead>
+    	<tr>
+    		<th>openid</th>
+    		<th>用户昵称</th>
+    		<th>操作</th>
+    	</tr>
+    </thead>
+	<!--{loop $userInfo $c}-->
+	<tr>
+		<td>{$c['openid']}</td>
+		<td>{echo json_decode($c['nickname'], true);}</td>
+		<td>
+            <button class="layui-btn layui-btn-danger layui-btn-mini delete-user" data-openid="{$c['openid']}" data-name="{echo json_decode($c['nickname'], true);}">删除</button>
+		</td>
+	</tr>
+	<!--{/loop}-->
+</table>
+{$pagehtm}
+
+<script>
+	layui.use('layer', function(){
+  		var layer = layui.layer;
+        //　添加按钮
+        $(".add-user").click(function(){
+			layer.open({
+                type: 2,
+				title: '添加人员',
+				maxmin: true,
+				area : ['500px' , '300px'],
+				content: '/index.php?mod={$mod}&act={$act}&opt={$opt}&do=add'
+			});
+		});
+
+        //　编辑按钮
+        $(".delete-user").click(function(){
+            var openid = $(this).data('openid');
+            var name = $(this).data('name');
+            layer.confirm('现在是要删除零费用用户: '+name+' ?', {}, function(){
+				$.ajax({
+					url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=delete',
+                    type: 'POST',
+                    data: {openid: openid},
+                    success: function(e) {
+                        if(e.code == 0) {
+                            layer.msg(e.msg, {icon: 1}, function(){
+                                parent.location.reload(); // 父页面刷新
+                            });
+                        } else {
+                            layer.msg(e.msg, {icon: 2});
+                        }
+                    }
+				})
+        	})
+        });
+	});
+</script>

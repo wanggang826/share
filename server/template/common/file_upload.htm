@@ -1,0 +1,26 @@
+{template jjsan:cp/common/header}
+<section class="window" style="margin: auto; width: 550px;">
+	<header>
+		<a href="#" class="close" onclick="hideWindow('file_upload')">关闭</a>
+	</header>
+	<section>
+		<form method="post" action="{$action}" enctype="multipart/form-data"  style="text-align: center; padding-left: 100px">
+			<div style="margin: auto">
+				<input type="file" name="file" style="border: 0px solid black;" required>
+				<a href="javascript:;" id="fuckyou"><input class="submitbutton" type="submit" value="上传"></a>
+			</div>
+		</form>
+	</section>
+</section>
+
+<script>
+    layui.use('layer', function(){
+        $('#fuckyou').click(function(){
+            parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+            parent.location.reload(); // 父页面刷新
+            return false;
+        });
+    });
+</script>
+{template jjsan:cp/common/footer}
+

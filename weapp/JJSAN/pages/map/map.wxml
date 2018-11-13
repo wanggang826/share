@@ -1,0 +1,2 @@
+<map class="map" id="myMap" scale='14' show-location markers="{{markers}}" bindmarkertap="makertap" controls="{{controls}}" bindcontroltap="controltap" bindregionchange='move' bindtap='tap'>
+</map>

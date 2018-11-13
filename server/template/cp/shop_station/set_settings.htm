@@ -1,0 +1,103 @@
+{template jjsan:cp/common/header}
+<div class="layui-form" style="padding: 20px 0 0 70px">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">收费策略:</label>
+        <div class="layui-input-inline">
+            <select name="fee_id" class="fee-id">
+                <option value="0">全局配置</option>
+                <!--{loop $fees $fee}-->
+                <option value="{$fee['id']}" {echo $feeSetting == $fee['id'] ? 'selected' : '';}>{$fee['name']}</option>
+                <!--{/loop}-->
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">图文配置:</label>
+        <div class="layui-input-inline">
+            <select name="pic_id" class="pic-id">
+                <option value="0">无</option>
+                <!--{loop $pictexts $pictext}-->
+                <option value="{$pictext['id']}" {echo $picSetting == $pictext['id'] ? 'selected' : '';}>{$pictext['name']}</option>
+                <!--{/loop}-->
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">名称:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" id="title" class="layui-input" value="{$shop_station['title']}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">地址:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="address" id="address" class="layui-input" value="{$shop_station['address']}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">摆放位置:</label>
+        <div class="layui-input-inline">
+            <input type="text" name="desc" id="desc" class="layui-input" value="{$shop_station['desc']}">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">归属（负责）人:</label>
+        <div class="layui-input-inline">
+            <select name="seller_id" class="seller-id">
+                <option value="0">无</option>
+                <!--{loop $all_sellers $seller}-->
+                <option value="{$seller['id']}" {echo $seller_id == $seller['id'] ? 'selected' : '';}>{$seller['name']}</option>
+                <!--{/loop}-->
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">启用状态:</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="1" title="启用" {echo $shop_station['status'] ? 'checked' : ''}>
+            <input type="radio" name="status" value="0" title="禁用" {echo $shop_station['status'] ? '' : 'checked'}>
+        </div>
+    </div>
+</div>
+    <div class="style-btn-center">
+        <input class="layui-btn submitbutton" type="submit" value="更新">
+    </div>
+
+
+<script>
+    layui.use(['layer', 'form'], function(){})
+    $('.submitbutton').click(function(){
+        $.ajax({
+            url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do={$do}',
+            type: 'POST',
+            data: {
+                shop_station_id: "{$shop_station_id}",
+                fee_id: $(".fee-id").val(),
+                pic_id: $(".pic-id").val(),
+                title: $("#title").val(),
+                address: $("#address").val(),
+                desc: $("#desc").val(),
+                status: $('input[name="status"]:checked').val(),
+                seller_id: $('.seller-id').val()
+            },
+            success: function(e) {
+                if (e.code == 0) {
+                    layer.msg(e.msg, {icon: 1}, function(){
+                        parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                        parent.location.reload(); // 父页面刷新
+                    });
+                } else {
+                    layer.msg(e.msg, {icon: 2});
+                }
+            },
+        })
+    })
+</script>
+{template jjsan:cp/common/footer}

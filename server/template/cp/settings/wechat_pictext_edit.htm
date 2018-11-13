@@ -1,0 +1,90 @@
+{template jjsan:cp/common/header}
+<section id="local-fee-settings">
+<form method="post" id="form_data">
+    <input type="hidden" name="pid" value="{$pid}">
+    <ul>
+		<li>
+			配置名称：<input type="text" name="name" value="$pictext['name']" required>
+		</li>
+		<li>
+			<span> 图文标题 </span> :
+			<input type="text" name="title" value="{$pictext['pictext']['title']}">
+		</li>
+		<li>
+			<span> 微信图片链接(图片为正方形) </span> :
+			<input type="text" name="wechat_picurl" value="{$pictext['pictext']['wechat_picurl']}">
+		</li>
+		<li>
+			<span> 支付宝图片链接(图片为长方形) </span> :
+			<input type="text" name="alipay_picurl" value="{$pictext['pictext']['alipay_picurl']}">
+		</li>
+		<li>
+			<span> 跳转链接 </span> :
+			<input type="text" name="url" value="{$pictext['pictext']['url']}">
+		</li>
+		<li>
+			<span> 启用时间 </span> :
+			<input type="text" name="stime"  id="start" class="laydate-icon" value="{$pictext['stime']}">
+		</li>
+		<li>
+			<span> 到期时间 </span> :
+			<input type="text" name="etime"  id="end" class="laydate-icon" value="{$pictext['etime']}">
+		</li>
+	</ul>
+    <div class="ui-btn-center"><button class="layui-btn submit-button">提交</button></div>
+</form>
+</section>
+<script>
+	layui.use('layer', function() {
+            var layer = layui.layer;
+            $('.submit-button').click(function(){
+                $.ajax({
+                    url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do={$do}',
+                    type: 'POST',
+                    data: $('#form_data').serialize(),
+                    success:function(e) {
+                        if (e.code == 0) {
+                            layer.msg(e.msg, {icon: 1}, function(){
+                                parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+                                parent.location.reload(); // 父页面刷新
+                            });
+                        } else {
+                            layer.msg(e.msg, {icon: 2});
+                        }
+                    },
+                });
+                return false;
+            });
+        });
+
+    jQuery(document).ready(function(){
+        //选择开始和结束日期
+        var start = {
+            elem: '#start',
+            format: 'YYYY/MM/DD hh:mm:ss',
+            max: '2099-06-16 23:59:59', //最大日期
+            istime: true,
+            istoday: false,
+            choose: function(datas){
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end',
+            format: 'YYYY/MM/DD hh:mm:ss',
+            max: '2099-06-16 23:59:59',
+            istime: true,
+            istoday: false,
+            choose: function(datas){
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+                start.start = datas //将开始日的初始值设定为结束日
+            }
+        };
+        start.max = $('#end').val();
+        end.min = $('#start').val();
+        laydate(start);
+        laydate(end);
+    })
+</script>
+{template jjsan:cp/common/footer}

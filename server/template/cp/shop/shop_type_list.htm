@@ -1,0 +1,59 @@
+{template jjsan:cp/common/header}
+<fieldset class="fieldsetclass shop-station-list">
+    <legend> 查询 </legend>
+    <form method="GET" action="index.php">
+        <input type="hidden" name="mod" value="{$mod}">
+        <input type="hidden" name="act" value="{$act}">
+        <input type="hidden" name="opt" value="{$opt}">
+        <div class="layui-form-item">
+            <h4>商铺类型名称：</h4>
+            <div class="layui-input-inline">
+                <input type="text" name="keyword" value="{$_GET['keyword']}" id="autocomplete" class="ui-input-longSize"/>
+                <input type="hidden" name="shop" id="shop" value="{$_GET['shop']}">
+            </div>
+        </div>
+        <div>
+            <button class="layui-btn">{lang jjsan:station_search}</button>
+        </div>
+    </form>
+</fieldset>
+<div class="add-shop-type">
+    <table class="layui-table" cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>名称</th>
+            <th>logo</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--{loop $shop_types $item}-->
+        <tr>
+            <td>{$item['id']}</td>
+            <td>{$item['type']}</td>
+            <td><img src="{$item['logo'][0]}" style="max-width: 100px;" height="80px" onerror="this.src='{APPROOT}static/images/fail-logo.jpg'"></td>
+            <td><a href="javascript:;" data-id="{$item['id']}" class="layui-btn layui-btn-mini layui-btn-green update-logo">更新logo</a></td>
+        </tr>
+        <!--{/loop}-->
+        </tbody>
+    </table>
+    <p> {$pagehtm} </p>
+</div>
+<script>
+    layui.use(['layer'], function(){
+        var layer = layui.layer;
+    });
+
+    // 更新Logo
+    $(".update-logo").click(function() {
+        layer.open({
+            type: 2,
+            title: '更新Logo',
+            maxmin: true,
+            area : ['640px' , '500px'],
+            content: "index.php?mod=cp&act=shop&opt=update_logo&type=shop_type&page={$page}&id=" + $(this).data('id')
+        });
+    });
+</script>
+{template jjsan:cp/common/footer}

@@ -1,0 +1,161 @@
+<form method="get" id="form_station_search" action="index.php">
+	<fieldset class="fieldsetclass">
+		<input type="hidden" name="mod" value="{$mod}">
+		<input type="hidden" name="act" value="{$act}">
+		<input type="hidden" name="opt" value="{$opt}">
+		<input type="hidden" name="do" value="search">
+		<legend>操作</legend>
+		<ul class="user-list-operate style-input">
+			<li>
+				<span>用户类型:</span>
+				<select name="platform">
+					<!--{loop $platform_arr $k $p}-->
+					<!--{if $k == $platform}-->
+					<option value="{$k}" selected>{$p}</option>
+					<!--{else}-->
+					<option value="{$k}">{$p}</option>
+					<!--{/if}-->
+					<!--{/loop}-->
+				</select>
+			</li>
+			<li>
+				<span>借还状态:</span>
+				<select name="status">
+					<!--{loop $status_arr $k $v}-->
+					<!--{if $k == $status}-->
+					<option value="{$k}" selected>{$v}</option>
+					<!--{else}-->
+					<option value="{$k}">{$v}</option>
+					<!--{/if}-->
+					<!--{/loop}-->
+				</select>
+			</li>
+			<li>
+				<span>用户id:</span>
+				<input type="text" name="id" value="{$id}">
+			</li>
+			<li>
+				<span>用户openid:</span>
+				<input type="text" name="openid" value="{$openid}">
+			</li>
+			<li>
+				<span>用户昵称:</span>
+				<input type="text" name="nickname" value="{$nickname}">
+			</li>
+			<li>
+				<span>开始日期:</span>
+				<input name="stime" value="{$_GET['stime']}" class="laydate-icon" id="start"/>
+			</li>
+			<li>
+				<span>结束日期:</span>
+				<input name="etime" value="{$_GET['etime']}" class="laydate-icon" id="end"/>
+			</li>
+		</ul>
+		<div>
+			<input type="submit" value="搜索" class="layui-btn" >
+		</div>
+	</fieldset>
+</form>
+<div>共{$count}条记录</div>
+<table class="layui-table">
+	<thead>
+	<tr>
+		<th>ID</th>
+		<th>用户类型</th>
+		<th>头像</th>
+		<th>名称</th>
+		<th>openID</th>
+		<th>账户余额</th>
+		<th>押金</th>
+		<th>订单数量</th>
+		<th>消费金额</th>
+		<th>未还订单</th>
+		<th>待退款</th>
+		<th>注册时间</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!--{loop $users $user}-->
+	<tr>
+		<td>{$user['id']}</td>
+		<td>
+			<!--{if $user['platform'] == 0}-->
+			<span style="color: green">微信</span>
+			<!--{else}-->
+			<span style="color: blue">支付宝</span>
+			<!--{/if}-->
+		</td>
+		<td>
+			<img src="{$user['headimgurl']}" width="30px" onerror="this.src='{APPROOT}static/images/default.png'"/>
+		</td>
+		<td>{$user['nickname']}</td>
+		<td>{$user['openid']}</td>
+		<td>{$user['usablemoney']}</td>
+		<td>{$user['deposit']}</td>
+		<td>
+			<!--{if $user['order_count'] == 0}-->
+			<span>0</span>
+			<!--{else}-->
+			<div class="layui-btn layui-btn-mini buyer-order" data-id="{$user['id']}" data-count="{$user['order_count']}">{$user['order_count']}</div>
+			<!--{/if}-->
+		</td>
+		<td>{$user['usefee_count']}</td>
+		<td>{$user['outstanding_order_count']}</td>
+		<td>{$user['refund']}</td>
+		<td>{$user['create_time']}</td>
+	</tr>
+	<!--{/loop}-->
+	</tbody>
+</table>
+<!--{if $no_users}-->
+<tr>
+	<p style="color:red;">您搜索的用户不存在!</p>
+</tr>
+<!--{/if}-->
+{$pagehtm}
+
+<script>
+    $(document).ready(function(){
+        //选择开始和结束日期
+        var start = {
+            elem: '#start',
+            format: 'YYYY/MM/DD',
+            //min: laydate.now(), //设定最小日期为当前日期
+            max: '2099-06-16 23:59:59', //最大日期
+            istime: true,
+            istoday: false,
+            choose: function(datas){
+                end.min = datas; //开始日选好后，重置结束日的最小日期
+                end.start = datas //将结束日的初始值设定为开始日
+            }
+        };
+        var end = {
+            elem: '#end',
+            format: 'YYYY/MM/DD',
+            //min: laydate.now(),
+            max: '2099-06-16 23:59:59',
+            istime: true,
+            istoday: false,
+            choose: function(datas){
+                start.max = datas; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        laydate(start);
+        laydate(end);
+    })
+</script>
+<script>
+	layui.use('layer', function(){
+		var layer = layui.layer;
+		//　订单列表
+		$(".buyer-order").click(function(){
+			layer.open({
+				type: 2,
+				title: '订单列表',
+				maxmin: true,
+				area : ['800px' , '600px'],
+				content: 'index.php?mod={$mod}&act={$act}&opt=buyer_order&buyer='+$(this).data('id')+'&count='+$(this).data('count')
+			});
+		});
+	});
+</script>

@@ -1,0 +1,248 @@
+{template jjsan:wechat/common/header}
+<style>body{background: #eee;}</style>
+<div class="order-list">
+	<!--{if $orderdata}-->
+	<ul class="more-list">
+		<!--{loop $orderdata $order}-->
+			<!--{if in_array($order['status'], $orderBorrowingStatus)}-->
+			<li class="order-present">
+				<div class="Presentmon">
+					<h4>订单编号:{$order['orderid']}<span>进行中</span></h4>
+				</div>
+				<div class="order-complete-open">
+					<div class="order-content">
+						<p>租借地点<span>{$order['borrow_station_name']}</span></p>
+						<p>租借时间<span>{echo date('Y-m-d H:i:s', $order['borrow_time'])}</span></p>
+						<p><em>收费标准</em><span class="standardStyle">{$order['feeStr']}</span></p>
+					</div>
+					<div>
+						<h4 style="float: left;" class="borrow-time">租借时长:<em>{echo humanTime(time()-$order['borrow_time'])}</em></h4>
+						<div class="pull-up-status order-pullUp">
+							<h4><i></i>收起</h4>
+						</div>
+					</div>
+
+				</div>
+				<div class="order-complete-fold">
+					<div class="order-content">
+						<p>租借地点<span>{$order['borrow_station_name']}</span></p>
+						<p>租借时间<span>{echo date('Y-m-d H:i:s', $order['borrow_time'])}</span></p>
+					</div>
+					<div class="order-money">
+						<h4>租借时长:<em>{echo humanTime(time()-$order['borrow_time'])}</em></h4>
+					</div>
+					<div class="pull-down-status order-fold">
+						<h4><i></i>查看</h4>
+					</div>
+				</div>
+			</li>
+			<!--{/if}-->
+			<!--{if in_array($order['status'], $orderFinishedStatus)}-->
+			<li class="order-present order-complete">
+				<div class="Presentmon">
+					<h4>订单编号:{$order['orderid']}<span>已完成</span></h4>
+				</div>
+				<div class="order-complete-open">
+					<div class="order-content">
+						<p>租借地点<span>{$order['borrow_station_name']}</span></p>
+						<p>租借时间<span>{echo date('Y-m-d H:i:s', $order['borrow_time'])}</span></p>
+						<p>归还地点<span>{$order['return_station_name']}</span></p>
+						<p>归还时间<span>{echo date('Y-m-d H:i:s', $order['return_time'])}</span></p>
+						<p><em>收费标准</em><span class="standardStyle">{$order['feeStr']}</span></p>
+					</div>
+					<div class="borrow-time">
+						<h4>租借时长:<em>{echo humanTime($order['return_time']-$order['borrow_time'])}</em></h4>
+						<h4 style="float: left;">产生费用:<em>{$order['usefee']}元</em></h4>
+						<div class="pull-up-status order-complete-pullUp">
+							<h4><i></i>收起</h4>
+						</div>
+					</div>
+
+				</div>
+				<div class="order-complete-fold">
+					<div class="order-content">
+						<p>租借地点<span>{$order['borrow_station_name']}</span></p>
+						<p>租借时间<span>{echo date('Y-m-d H:i:s', $order['borrow_time'])}</span></p>
+					</div>
+					<div class="order-money">
+						<h4>产生费用:<em>{$order['usefee']}元</em></h4>
+					</div>
+					<div class="pull-down-status order-complete-btn">
+						<h4><i></i>查看</h4>
+					</div>
+				</div>
+			</li>
+			<!--{/if}-->
+		<!--{/loop}-->
+	</ul>
+	<!--{else}-->
+		<div class="orderList-nothing">暂无租借记录</div>
+	<!--{/if}-->
+	<div id="load-img" style="display:none;"><i></i><span>加载中</span></div>
+	<div id="load-txt" style="display:none;"><h4>--- 到底了 ---</h4></div>
+</div>
+<script>
+	//查看
+	$(".pull-down-status h4").click(function(){
+		$(this).parents(".order-complete-fold").siblings(".order-complete-open").css("display","block");
+		$(this).parents(".order-complete-fold").css("display","none");
+	})
+	//收起
+	$(".pull-up-status h4").click(function(){
+		$(this).parents(".order-complete-open").css("display","none");
+		$(this).parents(".order-complete-open").siblings(".order-complete-fold").css("display","block");
+	})
+
+	$(document).ready(function(){
+		var open = $(".order-list li:first-child .order-complete-open");
+		var fold = $(".order-list li:first-child .order-complete-fold");
+
+
+		$(".order-list li:first-child .pull-up-status h4").click(function(){
+			open.removeClass("super-open");
+			open.addClass("super-fold");
+			fold.removeClass("super-fold");
+			fold.addClass("super-open");
+		})
+
+		$(".order-list li:first-child .pull-down-status h4").click(function(){
+			open.removeClass("super-fold");
+			open.addClass("super-open");
+			fold.removeClass("super-open");
+			fold.addClass("super-fold");
+		})
+	})
+</script>
+<script>
+	var page = 0;
+	var page_size = 10;
+	var is_loading_end = false;
+	var is_scroll_load_end = true;
+	var total = {$total};
+
+	$(window).scroll(function(){
+		if($(this).height() + $(this).scrollTop() >= $(document).height() && !is_loading_end){
+			page ++;
+			load_list(page, page_size);
+		}
+	})
+
+	// 获取订单
+	function load_list(page, page_size) {
+		is_scroll_load_end = false;
+		if(is_loading_end){
+			return;
+		}else{
+			if(page > 0){
+				$("#load-img").css("display","block");
+			}
+		}
+
+		// 获取后面的page_size条订单信息
+		$.ajax({
+			type:'get',
+			contentType:"application/json;charset=utf-8",
+			dataType:"json",
+			url:'/index.php?mod=wechat&act=user&opt=order_list&ajax=1',
+			data:{page:page,page_size:page_size},
+			success:function(orders)
+			{
+				// 渲染页面
+				$("#load-img").css("display","none");
+				$(".loading").css("display","none");
+				show_list(orders);
+				if(page_size * page >= total){
+					$("#load-txt").css("display","block");
+					is_loading_end = true;
+				}
+				is_scroll_load_end = true;
+			}
+		});
+	}
+
+	function show_list(orders) {
+        var c = ''; // 订单列表
+		for(var i = 0; i < orders.length; i++){
+			var order = orders[i];
+			if	(order['order_status'] == 0) {
+                c += '<li class="order-present">'
+                c += 		'<div class="Presentmon">'
+                c +=			'<h4>订单编号:'+order['orderid']+'<span>进行中</span></h4>'
+                c +=		'</div>';
+                c +=		'<div class="order-complete-open">'
+                c +=			'<div class="order-content">'
+                c +=				'<p>租借地点<span>'+order['borrow_station_name']+'</span></p>'
+                c +=				'<p>租借时间<span>'+order['borrow_time']+'</span></p>'
+                c +=				'<p>收费标准<span>'+order['feeStr']+'</span></p>'
+                c +=			'</div>'
+                c +=			'<div>'
+                c +=				'<h4 style="float: left;" class="borrow-time">租借时长:<em>'+order['use_time']+'</em></h4>'
+                c +=				'<div class="pull-up-status order-pullUp">'
+                c +=					'<h4><i></i>收起</h4>'
+                c +=				'</div>'
+                c +=			'</div>'
+                c +=		'</div>'
+                c +=		'<div class="order-complete-fold">';
+                c +=			'<div class="order-content">'
+                c +=    			'<p>租借地点<span>'+order['borrow_station_name']+'</span></p>'
+                c +=    			'<p>租借时间<span>'+order['borrow_time']+'</span></p>'
+                c +=    		'</div>'
+                c +=    		'<div class="order-money">'
+                c +=    			'<h4>租借时长:<em>'+order['use_time']+'</em></h4>'
+                c +=			'</div>'
+                c +=			'<div class="pull-down-status order-fold">'
+                c +=				'<h4><i></i>查看</h4>'
+                c +=			'</div>'
+                c +=		'</div>'
+                c +=	'</div>'
+			} else {
+                c += '<li class="order-present order-complete">'
+                c += 		'<div class="Presentmon">'
+                c +=			'<h4>订单编号:'+order['orderid']+'<span>已完成</span></h4>'
+                c +=		'</div>';
+                c +=		'<div class="order-complete-open">'
+                c +=			'<div class="order-content">'
+                c +=				'<p>租借地点<span>'+order['borrow_station_name']+'</span></p>'
+                c +=				'<p>租借时间<span>'+order['borrow_time']+'</span></p>'
+                c +=				'<p>归还地点<span>'+order['return_station_name']+'</span></p>'
+                c +=				'<p>归还时间<span>'+order['return_time']+'</span></p>'
+                c +=				'<p>收费标准<span>'+order['feeStr']+'</span></p>'
+                c +=			'</div>'
+                c +=			'<div>'
+                c +=				'<h4>租借时长:<em>'+order['use_time']+'</em></h4>'
+                c +=				'<h4 style="float: left;">产生费用:<em>'+order['usefee']+'元</em></h4>'
+                c +=				'<div class="pull-up-status order-complete-pullUp">'
+                c +=					'<h4><i></i>收起</h4>'
+                c +=				'</div>'
+                c +=			'</div>'
+                c +=		'</div>'
+                c +=		'<div class="order-complete-fold">';
+                c +=			'<div class="order-content">'
+                c +=    			'<p>租借地点<span>'+order['borrow_station_name']+'</span></p>'
+                c +=    			'<p>租借时间<span>'+order['borrow_time']+'</span></p>'
+                c +=    		'</div>'
+                c +=    		'<div class="order-money">'
+                c +=    			'<h4>产生费用:<em>'+order['usefee']+'元</em></h4>'
+                c +=			'</div>'
+                c +=			'<div class="pull-down-status order-complete-btn">'
+                c +=				'<h4><i></i>查看</h4>'
+                c +=			'</div>'
+                c +=		'</div>'
+                c +=	'</div>'
+			}
+		}
+        $(".more-list").append(c);
+        //查看
+        $(".pull-down-status h4").click(function(){
+            $(this).parents(".order-complete-fold").siblings(".order-complete-open").css("display","block");
+            $(this).parents(".order-complete-fold").css("display","none");
+        })
+        //收起
+        $(".pull-up-status h4").click(function(){
+            $(this).parents(".order-complete-open").css("display","none");
+            $(this).parents(".order-complete-open").siblings(".order-complete-fold").css("display","block");
+        })
+	}
+</script>
+
+{template jjsan:wechat/common/footer}

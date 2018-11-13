@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/map/map",
+    "pages/agreement/agreement",
+    "pages/personal/personal",
+    "pages/pay/pay",
+    "pages/guide/guide",
+    "pages/help/help",
+    "pages/nearby/nearby",
+    "pages/search/search",
+    "pages/history/history",
+    "pages/takecash/takecash",
+    "pages/wallet/wallet",
+    "pages/store/store"
+  ]
+}

@@ -1,0 +1,7 @@
+<article>
+	<div class="deposit-refund"><span>今天截止{$refundDeadline}点前，提现申请总额:</span> {$totalRefund} {lang jjsan:price_unit}</div>
+	<form method="post" action="http://{SERVER_DOMAIN}/wxpay.php">
+		<input type="hidden" name="formhash" value="{FORMHASH}">
+		<!-- <button class="fullbutton" name="submit" value="refund_exec">{lang jjsan:admin_refund_exec}</button> -->
+	</form>
+</article>

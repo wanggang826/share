@@ -1,0 +1,115 @@
+<scroll-view  class='scroll' scroll-y="true" bindscrolltolower="loadMore">
+
+  <view class="container">
+    <view class="box" wx:for="{{listInfo.items}}" wx:key="{{index}}">
+
+      <!-- 关闭状态 -->
+      <view class="closed" wx:if="{{!item.show}}">
+        <view class="title" bindtap="choose" id="{{index}}">
+          <view>
+            <view class="time">{{item.status==1?item.borrow_time:item.return_time}}</view>
+            <view class="remind" style="{{item.status==1?'background:#E8201B':'background:#349919'}}">{{item.tip}}</view>
+          </view>
+          <image src="../../assets/img/check.png"></image>
+        </view>
+
+        <view class="cost">
+          <text>产生费用</text>
+          <text class="sum">￥{{item.use_fee}}</text>
+        </view>
+        <view class="number">订单编号：{{item.orderid}}</view>
+      </view>
+
+      <!-- 使用中打开状态 -->
+      <view class="open" wx:if="{{item.show&&(item.status==1)}}">
+        <view class="title" bindtap="choose" id="{{index}}">
+          <view>
+            <text class="time">{{item.borrow_time}}</text>
+            <text class="remind" style="background:#E82801B">{{item.tip}}</text>
+          </view>
+          <image src=" ../../assets/img/back.png"></image>
+        </view>
+
+        <view class="content ">
+          <text>租借地点：{{item.borrow_name}}</text>
+          <text>租借时间：{{item.borrow_time}}</text>
+          <text>收费标准：{{item.fee_strategy}}</text>
+          <text>使用时长：{{item.last_time}}</text>
+          <view class="tips ">
+            <image src="../../assets/img/teach.png "></image>
+            <view bindtap='goToGuide'>还伞教程</view>
+            <image src="../../assets/img/register.png "></image>
+            <view id='{{item.orderid}}' bindtap='registerLost'>遗失登记</view>
+          </view>
+          <view class="cost ">
+            <text>产生费用</text>
+            <text class="sum">￥{{item.use_fee}}</text>
+          </view>
+          <view>
+            <text class="number">订单编号：{{item.orderid}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 已完成打开状态 -->
+      <view class="complete " wx:if="{{item.show&&(item.status==2)}}">
+        <view class="title" bindtap="choose" id="{{index}}">
+          <view>
+            <text class="time ">{{item.return_time}}</text>
+            <text class="remind ">{{item.tip}}</text>
+          </view>
+          <image src="../../assets/img/back.png" id="{{index}}"></image>
+        </view>
+
+        <view class="content ">
+          <text>租借地点：{{item.borrow_name}}</text>
+          <text>租借时间：{{item.borrow_time}}</text>
+          <text>归还地点：{{item.return_name}}</text>
+          <text>归还时间：{{item.return_time}}</text>
+          <text>收费标准：{{item.fee_strategy}}</text>
+          <text>使用时长：{{item.last_time}}</text>
+          <view class="cost ">
+            <text>产生费用</text>
+            <text class="sum ">￥{{item.use_fee}}</text>
+          </view>
+          <view>
+            <text class="number " id="{{item.orderid}}" bindtap="lostHandle">订单编号：{{item.orderid}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 已关闭打开状态 -->
+      <view class="shut " wx:if="{{item.show&&(item.status==3)}}">
+        <view class="title" bindtap="choose" id="{{index}}">
+          <view>
+            <text class="time ">{{item.return_time}}</text>
+            <text class="remind ">{{item.tip}}</text>
+          </view>
+          <image src="../../assets/img/back.png" id="{{index}}"></image>
+        </view>
+
+        <view class="content ">
+          <text>租借地点：{{item.borrow_name}}</text>
+          <text>租借时间：{{item.borrow_time}}</text>
+          <text>收费标准：{{item.fee_strategy}}</text>
+          <text>处理时间：{{item.return_time}}</text>
+          <view class="cost ">
+            <text>产生费用</text>
+            <text class="sum ">￥{{item.use_fee}}</text>
+          </view>
+          <view>
+            <text class="number ">订单编号：{{item.orderid}}</text>
+          </view>
+        </view>
+      </view>
+
+    </view>
+
+    <view class="tip" wx:if="{{listInfo.items==0}}">
+      <image src="../../assets/img/noresult.png"></image>
+      <text>暂无记录...</text>
+    </view>
+
+  </view>
+
+</scroll-view>

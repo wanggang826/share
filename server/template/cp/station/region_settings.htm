@@ -1,0 +1,26 @@
+<h1>
+	<span id="info_tip"></span>
+</h1>
+
+<section style="margin-top:20px;">
+	<form method="post" action="index.php?mod=cp&act=station&opt=add_region_error_man">
+	<fieldset class="fieldsetclass">
+    	<legend>添加地区报错人员</legend>
+    	  <select name="area" size="3" style="width: 150px; height: 100px;">
+			<!--{loop $title_list $v}-->
+			<option value="{$v}">$v</option>
+			<!--{/loop}-->
+    	  </select>  
+    	  <select name="error_man" size="3" style="width: 150px; height: 100px;">
+			<!--{loop $error_mans $openid $name}-->
+			<option value="{$openid}">$name</option>
+			<!--{/loop}-->
+    	  </select>  
+    	  <div style="margin-top:20px;">
+			  <input class="layui-btn" type="submit" value="{lang jjsan:submit}">
+		</div>
+    </fieldset>
+	</form>
+	
+</section>
+

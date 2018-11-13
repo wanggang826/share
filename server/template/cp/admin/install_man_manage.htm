@@ -1,0 +1,119 @@
+<fieldset class="fieldsetclass layui-form-item">
+	<legend>维护人员管理</legend>
+	<!--{if $cdo['add']}-->
+	<div style="margin-left: 1%;"><button class="layui-btn add-install-man">$cdo['add']</button></div>
+	<!--{/if}-->
+	<table class="layui-table">
+		<thead>
+			<tr>
+				<th>uid</th>
+				<th>角色</th>
+				<th>用户名称</th>
+				<th>权限状态</th>
+				<th>操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!--{loop $data $item}-->
+			<tr>
+				<td>{$item['id']}</td>
+				<td>{$item['role']}</td>
+				<td>{$item['name']}</td>
+				<td>
+					<!--{if $item['status'] == '普通用户'}-->
+					<span style="color:green;">{$item['status']}</span>
+					<!--{/if}-->
+					<!--{if $item['status'] == '维护'}-->
+					<span style="color:blue;">{$item['status']}</span>
+					<!--{/if}-->
+					<!--{if $item['status'] == '待通过'}-->
+					<span style="color:red;">{$item['status']}</span>
+					<!--{/if}-->
+				</td>
+				<td>
+					<!--{if $item['status'] == '普通用户'}-->
+					<!--{if $cdo['set_install']}-->
+					<button class="layui-btn layui-btn-warm layui-btn-small set-install" data-id="{$item['id']}" >维护</button>
+					<!--{/if}-->
+					<!--{/if}-->
+
+					<!--{if $item['status'] == '维护'}-->
+					<!--{if $cdo['set_common']}-->
+					<button class="layui-btn layui-btn-normal layui-btn-small set-common" data-id="{$item['id']}">普通</button>
+					<!--{/if}-->
+					<!--{/if}-->
+
+					<!--{if $item['status'] == '待通过'}-->
+					<!--{if $cdo['pass']}-->
+					<button class="layui-btn layui-btn layui-btn-small pass" data-id="{$item['id']}">通过</button>
+					<!--{/if}-->
+					<!--{/if}-->
+					<!--{if $cdo['delete']}-->
+					<button class="layui-btn layui-btn-danger layui-btn-small delete" data-id="{$item['id']}">删除</button>
+					<!--{/if}-->
+				</td>
+			</tr>
+			<!--{/loop}-->
+		</tbody>
+	</table>
+</fieldset>
+<script>
+	layui.use('layer', function(){
+            var layer = layui.layer;
+
+            //　添加按钮
+            $(".add-install-man").click(function(){
+                var id = $(this).data('id');
+                layer.open({
+                    type: 2,
+                    title: '添加维护人员',
+                    maxmin: true,
+                    area : ['600px' , '600px'],
+                    content: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=add'
+                });
+            });
+
+            // 设置普通用户
+			$('.set-common').click(function(){
+			    $.ajax({
+			        url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=set_common&id='+$(this).data('id'),
+					data: {},
+					success: function(e){
+			            window.location.reload();
+					}
+				})
+			})
+            // 设置维护用户
+			$('.set-install').click(function(){
+			    $.ajax({
+			        url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=set_install&id='+$(this).data('id'),
+					data: {},
+					success: function(e){
+			            window.location.reload();
+					}
+				})
+			});
+            // 删除用户
+			$('.delete').click(function(){
+			    $.ajax({
+			        url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=delete&id='+$(this).data('id'),
+					data: {},
+					success: function(e){
+			            window.location.reload();
+					}
+				})
+			});
+
+            // 通过申请
+			$('.pass').click(function(){
+			    $.ajax({
+			        url: 'index.php?mod={$mod}&act={$act}&opt={$opt}&do=pass&id='+$(this).data('id'),
+					data: {},
+					success: function(e){
+			            window.location.reload();
+					}
+				})
+			});
+
+        });
+</script>

@@ -1,0 +1,133 @@
+{template jjsan:wechat/common/header}
+<style>
+	body {background: #eee;}
+</style>
+<div class="shop-pay-after">
+	<div class="shop-pay-status">
+		<!--{if $order_info['status'] == ORDER_STATUS_RENT_CONFIRM_FIRST}-->
+		<div class="centerH imgH">
+			<h2><img src="static/images/watting.gif"/></h2>
+			<div class="take-prompt">
+				<h4><em class="slot-number">{$slot}</em>号槽准备出伞</h4>
+				<span>绿灯闪烁时，请取伞</span>
+			</div>
+		</div>
+		<!--{elseif $order_info['status'] == ORDER_STATUS_PAID}-->
+		<div class="centerH imgH">
+			<h2><img src="static/images/watting.gif"/></h2>
+			<div class="take-prompt">
+				<h4>支付成功</h4>
+				<span>系统正在出伞，请稍等...</span>
+			</div>
+		</div>
+		<!--{elseif $order_info['status'] == ORDER_STATUS_RENT_CONFIRM}-->
+		<div class="centerH">
+			<h2><img src="static/images/icon-success.png"/></h2>
+			<div class="take-prompt">
+				<h4>借出成功</h4>
+				<span>欢迎再次使用</span>
+			</div>
+			<div class="return-index">
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{elseif in_array($order_info['status'], [ORDER_STATUS_RENT_NOT_FETCH, ORDER_STATUS_RENT_NOT_FETCH_INTERMEDIATE])}-->
+		<div class="centerH">
+			<h2><img src="static/images/icon-fail.png"/></h2>
+			<div class="not-take-prompt">
+				<h4>订单结束</h4>
+				<span>雨伞未取走</span>
+			</div>
+			<div class="fail-status">
+				<a href="wxpay.php?act=pay&mobile=2&stationid={$order_info[borrow_station]}&itemtype=umbrella">继续借伞</a>
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{elseif $order_info['status'] == ORDER_STATUS_MOTOR_ERROR}-->
+		<div class="centerH">
+			<h2><img src="static/images/abnormal.png"/></h2>
+			<div class="take-prompt">
+				<h4>借出失败</h4>
+				<span>当前机器异常，请稍后重试</span>
+			</div>
+			<div class="return-index">
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{elseif $order_info['status'] == ORDER_STATUS_LAST_ORDER_UNFINISHED}-->
+		<div class="centerH">
+			<h2><img src="static/images/icon-fail.png"/></h2>
+			<div class="take-prompt">
+				<h4>借出失败</h4>
+				<span>机器正在使用中，请稍后</span>
+			</div>
+			<div class="fail-status">
+				<a href="wxpay.php?act=pay&mobile=2&stationid={$order_info[borrow_station]}&itemtype=umbrella">继续借伞</a>
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{elseif $order_info['status'] == ORDER_STATUS_POWER_LOW or $order_info['status'] == ORDER_STATUS_SYNC_TIME_FAIL}-->
+		<div class="centerH">
+			<h2><img src="static/images/abnormal.png"/></h2>
+			<div class="take-prompt">
+				<h4>借出失败</h4>
+				<span>当前机器异常，暂时无法提供服务</span>
+			</div>
+			<div class="return-index">
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{else}-->
+		<div class="centerH">
+			<h2><img src="static/images/abnormal.png"/></h2>
+			<div class="take-prompt">
+				<h4>当前机器异常，请稍后重试</h4>
+			</div>
+			<div class="return-index">
+				<a href="index.php?mod=wechat&act=user&opt=ucenter">返回用户中心</a>
+			</div>
+		</div>
+		<!--{/if}-->
+	</div>
+	<div class="wxPay-footer">
+		<h4>
+			<span>温馨提示</span>
+		</h4>
+		<ul>
+				<!--{if $order_info['platform'] == PLATFORM_ZHIMA}-->
+					<li><span>1. 当绿灯闪烁时，方可取出雨伞。</span></li>
+					<li><span>2. 雨伞归还前，请合上伞扣，整理好雨伞，谢谢合作。</span></li>
+					<li><span>3. 雨伞归还后，租借产生的费用会由支付宝代扣。</span></li>
+				<!--{else}-->
+					<li><span>1. 当绿灯闪烁时，方可取出雨伞。</span></li>
+					<li><span>2. 如果雨伞借出失败，押金会退还至用户中心。</span></li>
+					<li><span>3. 雨伞归还前，请合上伞扣，整理好雨伞，谢谢合作。</span></li>
+					<li><span>4. 如需提现，请进入用户中心进行提现操作。</span></li>
+				<!--{/if}-->
+		</ul>
+	</div>
+</div>
+<script>
+    $(function(){
+		timer = setInterval(function(){
+			$.ajax({
+				url : '/index.php?mod=wechat&act=user&opt=real_time&do=query&orderid={$orderid}',
+				success : function(e){
+                    if(e.data.status == {$order_info['status']}) {
+                        if(e.data.status == 5 || e.data.status == 1){
+                            $('.slot-number').text(e.data.slot);
+                            return;
+						}else{
+                            clearInterval(timer);
+                            return;
+						}
+					}else{
+						location.reload(true);
+					}
+				}
+            })
+		}, 1000)
+	})
+</script>
+</body>
+</html>

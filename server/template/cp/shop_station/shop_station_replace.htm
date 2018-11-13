@@ -1,0 +1,48 @@
+{template jjsan:cp/common/header}
+<style>
+	li{margin: 20px 30px}
+</style>
+<ul class="shop-stationReplace">
+	<li>
+		<span> 新的机器sid </span> :
+		<input type="text" name="sid" id="sid" class="ui-input-longSize">
+	</li>
+	<li>
+		<span> 站点名称 </span> :{$shop_station['title']}
+	</li>
+	<li>
+		<span> 目前绑定的机器id </span> :{$shop_station['station_id']}
+	</li>
+	<li class="ui-btn-center">
+		<input type="button" name="replace" value="确认更换" onclick="replaceShopStation({$shop_station_id})" class="layui-btn">
+	</li>
+</ul>
+
+<script>
+    function replaceShopStation(shop_station_id) {
+		sid = document.getElementById('sid');
+		console.log(sid);if(confirm("确定换机？")) {
+            directive('shop_station_replace', shop_station_id, sid.value);
+        }
+    }
+
+    function directive(opt, shop_station_id, sid) {
+        var url = 'index.php?mod=cp&act=shop_station';
+        $.ajax({
+            url: url,
+            dataType : 'JSON',
+            data: {"opt": opt, "shop_station_id" : shop_station_id, "sid" : sid},
+        })
+		.done(function(data) {
+			console.log(data);
+			alert(data.errmsg);
+			parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭本iframe层
+			parent.location.reload(); // 父页面刷新
+		})
+		.fail(function() {
+			console.log("error");
+		});
+    }
+
+</script>
+{template jjsan:cp/common/footer}

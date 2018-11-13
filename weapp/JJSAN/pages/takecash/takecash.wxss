@@ -1,0 +1,126 @@
+page {
+  height: 100%;
+  width: 100%;
+  font-family: '微软雅黑';
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  background: #eee;
+}
+
+.container >view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.money {
+  width: 100%;
+  height: 252rpx;
+  background: #f8f8f8;
+  display: flex;
+  flex-direction: row;
+  color: #2a2929;
+  margin-bottom: 2rpx;
+}
+
+.money >text, .money>view {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.allmoney {
+  width: 40%;
+  align-items: center;
+  justify-content: center;
+  font-size: 90rpx;
+}
+
+.wallet, .detail {
+  width: 30%;
+  padding-top: 30rpx;
+  font-size: 26rpx;
+}
+
+.wallet {
+  padding-left: 24rpx;
+}
+
+.detail {
+  justify-content: flex-end;
+  padding-right: 24rpx;
+}
+
+.detail>image{
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.content {
+  height: 80rpx;
+  background: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 26rpx;
+  color: #2a2929;
+  box-sizing: border-box;
+}
+
+.number {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+}
+
+.line {
+  width: 2rpx;
+  height: 60rpx;
+  background: #eee;
+}
+
+.btn {
+  height: 188rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn button {
+  background: linear-gradient(#ffd500, #feda02);
+  font-size: 32rpx;
+  color: #2a2929;
+  width: 558rpx;
+  height: 76rpx;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tip {
+  box-sizing: border-box;
+  padding: 0 24rpx;
+}
+
+.title {
+  font-size: 30rpx;
+  color: #2a2929;
+  margin-bottom: 30rpx;
+}
+
+.context {
+  font-size: 26rpx;
+  color: #484848;
+  line-height: 34rpx;
+  margin-bottom: 22rpx;
+}
+
+.phone {
+  display: inline-block;
+  color: #002afe;
+}

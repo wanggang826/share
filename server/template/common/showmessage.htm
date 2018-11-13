@@ -1,0 +1,10 @@
+<!--{template jjsan:common/header}-->
+<div style="color: green; text-align: center; margin-top: 20%; font-size: 16px;">{$show_message}!</div>
+<div style="text-align: center; margin-top: 20px;">
+	<!--{if $forward}-->
+	<h4><a href="{$forward}" style="text-decoration: underline">点我立即跳转</a></h4>
+	<!--{else}-->
+	<h4><a href="javascript:history.go(-1)" style="text-decoration: underline">点我返回</a></h4>
+	<!--{/if}-->
+</div>
+<!--{template jjsan:common/footer}-->

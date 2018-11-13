@@ -1,0 +1,336 @@
+page {
+  height: 100%;
+  width: 100%;
+  background: #eee;
+}
+
+.scroll{
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  width: 100%;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+}
+
+.box {
+  width: 100%;
+  margin-bottom: 20rpx;
+}
+
+.closed {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-bottom: 22rpx;
+}
+
+.closed>view {
+  margin-top: 22rpx;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+.closed .title {
+  justify-content: space-between;
+}
+
+.closed .title >image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.closed .title >view {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.closed .title .time {
+  font-size: 28rpx;
+  color: #2a2929;
+}
+
+.closed .title .remind {
+  width: 110rpx;
+  height: 28rpx;
+  font-size: 24rpx;
+  margin-left: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  color: #fff;
+}
+
+.closed .cost, .closed .number {
+  font-size: 26rpx;
+  color: #8d8d8d;
+}
+
+.closed .sum {
+  font-size: 36rpx;
+  color: #f5c800;
+  margin-left: 20rpx;
+}
+
+.open {
+  display: flex;
+  flex-direction: column;
+  background: #eee;
+}
+
+.open .title {
+  display: flex;
+  justify-content: space-between;
+  padding: 22rpx 20rpx;
+  background: white;
+  margin-bottom: 2rpx;
+}
+
+.open .title>text {
+  display: flex;
+}
+
+.open .title >image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.open .title >view {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.open .title .time {
+  font-size: 28rpx;
+  color: #2a2929;
+}
+
+.open .title .remind {
+  width: 110rpx;
+  height: 28rpx;
+  font-size: 24rpx;
+  background: #e8201b;
+  margin-left: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  color: #fff;
+}
+
+.open .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: white;
+  box-sizing: border-box;
+  padding-top: 22rpx;
+}
+
+.open .content >text, .open .content>view {
+  margin: 0 0 22rpx 20rpx;
+  color: #2a2929;
+  font-size: 28rpx;
+}
+
+.open .tips {
+  display: flex;
+  align-items: center;
+}
+
+.open .tips view {
+  color: #8d8d8d;
+  margin-right: 50rpx;
+}
+
+.open .tips image {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.open .sum {
+  font-size: 36rpx;
+  color: #f5c800;
+  margin-left: 20rpx;
+}
+
+.open .number {
+  font-size: 26rpx;
+  color: #8d8d8d;
+}
+
+.complete {
+  display: flex;
+  flex-direction: column;
+  /* overflow: hidden; */
+}
+
+.complete .title {
+  display: flex;
+  justify-content: space-between;
+  padding: 22rpx 20rpx;
+  background: white;
+  margin-bottom: 2rpx;
+}
+
+.complete .title>text {
+  display: flex;
+}
+
+.complete .title >image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.complete .title >view {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.complete .title .time {
+  font-size: 28rpx;
+  color: #2a2929;
+}
+
+.complete .title .remind {
+  width: 110rpx;
+  height: 28rpx;
+  font-size: 24rpx;
+  background: #349919;
+  margin-left: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  color: #fff;
+}
+
+.complete .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: white;
+  box-sizing: border-box;
+  padding-top: 22rpx;
+  /* overflow: hidden; */
+}
+
+.complete .content >text, .complete .content>view {
+  margin: 0 0 22rpx 20rpx;
+  color: #2a2929;
+  font-size: 28rpx;
+}
+
+.complete .sum {
+  font-size: 36rpx;
+  color: #f5c800;
+  margin-left: 20rpx;
+}
+
+.complete .number {
+  font-size: 26rpx;
+  color: #8d8d8d;
+}
+
+.shut {
+  display: flex;
+  flex-direction: column;
+  /* overflow: hidden; */
+}
+
+.shut .title {
+  display: flex;
+  justify-content: space-between;
+  padding: 22rpx 20rpx;
+  background: white;
+  margin-bottom: 2rpx;
+}
+
+.shut .title>text {
+  display: flex;
+}
+
+.shut .title >image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.shut .title >view {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.shut .title .time {
+  font-size: 28rpx;
+  color: #2a2929;
+}
+
+.shut .title .remind {
+  width: 110rpx;
+  height: 28rpx;
+  font-size: 24rpx;
+  background: #349919;
+  margin-left: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20rpx;
+  color: #fff;
+}
+
+.shut .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: white;
+  box-sizing: border-box;
+  padding-top: 22rpx;
+  /* overflow: hidden; */
+}
+
+.shut .content >text, .shut .content>view {
+  margin: 0 0 22rpx 20rpx;
+  color: #2a2929;
+  font-size: 28rpx;
+}
+
+.shut .sum {
+  font-size: 36rpx;
+  color: #f5c800;
+  margin-left: 20rpx;
+}
+
+.shut .number {
+  font-size: 26rpx;
+  color: #8d8d8d;
+}
+
+.tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 30rpx;
+  color: #939393;
+}
+
+.tip>image {
+  width: 154rpx;
+  height: 180rpx;
+  margin: 80rpx 0 20rpx 0;
+}

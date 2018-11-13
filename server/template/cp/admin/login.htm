@@ -1,0 +1,41 @@
+<section class="login-index">
+	<h1>用户登录</h1>
+	<form action="" method="post" id="login-index">
+		<div class="login-content">
+			<div class="login-text">
+				<input type="text" name="username" placeholder="请输入账号"/>
+				<input type="password" name="password" placeholder="请输入登录密码">
+			</div>
+			<div class="login-btn">
+				<input type="submit" value="登录">
+			</div>
+			<div class="new-user-login"><a href="/index.php?mod=cp&act=admin&opt=register">新用户注册</a></div>
+		</div>
+	</form>
+</section>
+
+<script>
+$("#login-index").validate({
+	rules: {
+		username:{
+			required: true,
+		},
+		password: {
+			required: true,
+		},
+	}
+});
+
+$.extend($.validator.messages, {
+	required: "内容不能为空",
+});
+
+$(document).keypress(function(e){
+    // 回车
+    if (e.which == 13) {
+        $('input[type=submit]').click();
+	}
+})
+$(".now_page").hide();
+$(".fl_main").css({"box-shadow":"none","margin-left":"0px","margin-top":"0"});
+</script>

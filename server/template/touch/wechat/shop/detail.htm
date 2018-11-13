@@ -1,0 +1,220 @@
+{template jjsan:wechat/common/shop_header}
+<link rel="stylesheet" href="/static/css/jquery.bxslider.css" type="text/css" media="all">
+<script src="/static/js/jquery.bxslider.min.js"></script>
+<style>body{ background:#eee}</style>
+<!--{eval $i = current($sta)}-->
+<div class="business-detail" id="business-detail">
+	<div class="carousel">
+    	<div class="loading" style="display: none"><img src="static/images/loading-san.gif"/></div>
+        <ul class="bxslider" id="banner">
+        	<!--{eval $item = current($sta)}-->
+        	<!--{if $item['shopcarousel']}-->
+        		<!--{loop $item['shopcarousel'] $v}-->
+                <li><img src="{$v}" onerror="this.src='static/images/fail.png'"/></li>
+                <!--{/loop}-->
+            <!--{else}-->
+            	<li><img src="static/images/fail.png"/></li>
+            <!--{/if}-->
+        </ul>
+    </div>
+
+    <div class="umbrella_borrow">
+        <div id="umbrellaList">
+            <div>
+            <!--{loop $sta $item}-->
+                <div class="umbrella-surplus borrow-txt">
+                    <div class="umbrella-color">
+                        <div class="umbrella-img"><img src="static/images/san.png"/></div>
+                        <div class="umbrella-txt">
+                            <h4><i class="icon-borrow"></i>&nbsp;<span>可借</span>&nbsp;&nbsp;&nbsp;<span id="bor">{echo $item['usable']+0}</span></h4>
+                            <h4><i class="icon-return"></i>&nbsp;<span>可还</span>&nbsp;&nbsp;&nbsp;<span id="ret">{echo $item['empty']+0}</span></h4>
+                         </div>
+                    </div>
+                    <div class="clear"></div>
+                    <p class="desc">{$item['desc']}</p>
+                </div>
+                <!--{/loop}-->
+            </div>
+        </div>
+        <div class="borrow-btn"><a href="javascript:void(0);" id="borrow-umbrella">借雨伞</a></div>
+    </div>
+    <div class="clear"></div>
+    <ul class="detail-list">
+    	<li>
+        <!--{if $shopInfo['phone']}-->
+        	<a href="tel:{$shopInfo['phone']}" class="phone-num">
+        <!--{else}-->
+        	<a href="javascript:;" onClick="javascript:alert('很抱歉，该商户暂未提供联系电话哦!');" class="phone-num">
+        <!--{/if}-->
+        <!--{if $shopInfo['name']}-->
+            	<h4 class="business-name">$shopInfo['name']</h4>
+        <!--{/if}-->
+            <span class="icon-default">联系我<i class="icon-phone"></i></span>
+            <div class="clear"></div>
+            </a>
+        </li>
+        <li>
+        	<a href="javascript:;" id="goThere">
+            	<h6><i class="icon-location" ></i></h6>
+            	<h4 class="limit-width address" >{$shopInfo['address']}</h4>
+                <span class="icon-default">到这去<i class="icon-arrow"></i></span>
+                <div class="clear"></div>
+            </a>
+        </li>
+        <li>
+            <h6><i class="icon-time"></i></h6>
+            <h4 class="shop-time">营业时间：
+            <!--{if $item['shopstime']}-->
+                <span id="shopstime">{$item['shopstime']}</span>
+            <!--{/if}-->
+                &nbsp;--&nbsp;
+            <!--{if $item['shopetime']}-->
+                <span id="shopetime">{$item['shopetime']}</span>
+            <!--{/if}-->
+            </h4>
+        </li>
+        <li>
+            <h6><i class="icon-money"></i></h6>
+        <!--{if !$item['shopcost'] || $item['shopcost'] == 0}-->
+            <h4 class="shop-cost">人均消费：<span id="shopcost">-</span></h4>
+        <!--{else}-->
+            <h4 class="shop-cost">人均消费：<span id="shopcost">{$item['shopcost']} 元</span></h4>
+        <!--{/if}-->
+        </li>
+        <li>
+        	<a href="javascript:;">
+            	<h6><i class="icon-finger"></i></h6>
+                <h4>商家推荐</h4>
+            </a>
+        </li>
+    </ul>
+</div>
+
+</div>
+<!--引入jsAPI的功能js-->
+<script src="https://static.alipay.com/aliBridge/1.0.0/aliBridge.min.js"></script>
+<!--扫码功能8.1以上钱包支持-->
+<script>
+$(function(){
+	var carousel = [];
+	<!--{if $i['shopcarousel']}-->
+		<!--{loop $i['shopcarousel'] $v}-->
+		carousel.push('{$v}');
+		<!--{/loop}-->
+	<!--{else}-->
+		carousel.push('/static/images/fail.jpg');
+	<!--{/if}-->
+
+	var mh = $(window).width()*(257 / 375);
+	$(".loading").css("height",mh+"px");
+	$(".bxslider").bxSlider({});//adaptiveHeight: true
+	$(".bx-pager").css("margin-left",-$(".bx-pager").width()/2);
+	$(".carousel,.bx-viewport,.bxslider").css("height",mh+"px");
+	$(".carousel ul li img").css("min-height",mh+"px");
+	$(".carousel ul li img:last-child").load(function(){
+		$(".loading").css("display","none");
+	});
+
+	// 绑定到这里去事件(位置未获取到的时候)
+	$("#goThere").on("click",function(){
+		alert("暂时还未获取到商铺地理位置，请您稍后再试！");
+	});
+	// 绑定到这里去(已经获取到位置)
+	$.ajax({
+			type: "GET",
+			dataType: "json",
+			url:'/index.php?mod=api&act=common&opt=change_baidu_coordinates_to_gaode',
+			data: {lng:{$lng},lat:{$lat}},
+			success: function(data){
+				if(data.status && data.status == 1){
+					shop_point = data.locations.split(",");
+					$("#goThere").unbind();
+					$("#goThere").on('click',function(){
+						var name = $(".business-name").text()
+						var address = $(".address").text();
+						// 微信到这里去
+						if(isWeiXin()) {
+							wx.openLocation({
+								longitude:Number(shop_point[0]),
+								latitude:Number(shop_point[1]),
+								name:name,
+								address:address,
+								scale:15,
+								infoUrl:""
+							});
+						} else {
+							var map = new AMap.Map("mapContainer", {
+								zoom: 2,
+								center:[shop_point[0],shop_point[1]]
+							});
+							// 高德地图到这里去
+							marker = new AMap.Marker({
+								map:map,
+								position:[shop_point[0],shop_point[1]]
+							});
+							marker.markOnAMAP({
+								'name':name,
+								position:marker.getPosition()
+							});
+						}
+					});
+				}
+			}
+	});
+
+	// 调用微信扫一扫
+	$("#borrow-umbrella").on("click",function(){
+		// 微信扫码
+		if (isWeiXin()) {
+			wx.scanQRCode({
+				needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+				scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+				success: function (res) {
+					var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+				}
+			});
+		}
+		// 支付宝扫码
+        if (isAlipay()) {
+            document.addEventListener('AlipayJSBridgeReady', function () {
+                if(navigator.userAgent.indexOf("AlipayClient")===-1){
+                    alert('请在支付宝钱包内运行');
+                }else{
+                    if((Ali.alipayVersion).slice(0,3)>=8.1){
+                        Ali.scan({
+                            type: 'qr' //qr(二维码) / bar(条形码) / card(银行卡号)
+                        }, function(result) {
+                            if(result.errorCode){
+                                //没有扫码的情况
+                                //errorCode=10，用户取消
+                                //errorCode=11，操作失败
+                            }else{
+                                //成功扫码的情况
+                                //result.barCode	string	扫描所得条码数据
+                                //result.qrCode	string	扫描所得二维码数据
+                                //result.cardNumber	string	扫描所得银行卡号
+                                var result = result.qrCode;
+                                var codResult = encodeURI(result);
+                            }
+                        });
+                    }else{
+                        Ali.alert({
+                            title: '亲',
+                            message: '请升级您的钱包到最新版',
+                            button: '确定'
+                        });
+                    }
+                }
+            }, false);
+        }
+	});
+});
+</script>
+<!--{if count($sta) >= 3}-->
+<script>
+    $(function(){
+        new IScroll('#umbrellaList');
+    })
+</script>
+<!--{/if}-->
+{template jjsan:wechat/common/footer}

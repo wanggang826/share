@@ -1,0 +1,424 @@
+{template jjsan:cp/common/header}
+<!--{if !$auth->globalSearch}-->
+	<!--{if $cdo['city_apply']}-->
+		<fieldset class="fieldsetclass apply-content">
+			<legend>城市申请</legend>
+				<div class="fold-content">
+					<div class="fold-btn"><span class="layui-btn">展开 / 收起</span></div>
+					<div class="city-apply">
+						<div class="role-add-text">
+							<input type="checkbox" id="role-add-all"/>
+							<span>全选</span>
+						</div>
+						<!--{loop $area_nav_tree $key $val}-->
+						<ul class="access">
+							<li class="first-floor">
+								<input type="checkbox" value="{$val['province']}" name="province" title="{$val['province']}" class="city-name first-input"
+								<!--{if key_exists($val['province'], $cities)}-->
+								checked
+								<!--{/if}-->
+								>{$val['province']}
+								<ul>
+									<li>
+										<!--{loop $val[city] $vv}-->
+										<h4>
+											<input type="checkbox" value="{$val['province']}/{$vv['name']}" name='city' title="{$val_val['opt']}" class="city-name second-input"
+											<!--{if in_array($vv['name'], $cities[$val['province']])}-->
+											checked
+											<!--{/if}-->
+											> {$vv['name']}
+										</h4>
+										<!--{/loop}-->
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<hr>
+						<!--{/loop}-->
+
+							<div class="layui-form-item">
+								<div>
+									<!--{if $cityStatus === null}-->
+										<!--{if $cdo['city_apply']}-->
+											<button class="layui-btn" id="apply-cities">申请权限</button>
+										<!--{/if}-->
+									<!--{elseif $cityStatus == true}-->
+										<div class="layui-btn layui-btn-green">申请通过</div>
+											<!--{if $cdo['city_modify']}-->
+											<button class="layui-btn" id="modify-cities">修改权限</button>
+											<!--{/if}-->
+									<!--{elseif $cityStatus == false}-->
+										<div class="layui-btn layui-btn-warm">已申请,审核中</div>
+											<!--{if $cdo['city_modify']}-->
+												<button class="layui-btn" id="modify-cities">修改权限</button>
+											<!--{/if}-->
+									<!--{/if}-->
+									<!--{if $cityStatus !== null && $cdo['city_delete']}-->
+										<button class="layui-btn layui-btn-danger" id="delete-cities">删除权限</button>
+									<!--{/if}-->
+								</div>
+							</div>
+						</div>
+				</div>
+		</fieldset>
+	<!--{/if}-->
+	<!--{if $cdo['shop_apply']}-->
+		<!--已经申请的商铺-->
+		<fieldset class="fieldsetclass apply-content">
+			<legend>已申请或者申请通过的商铺</legend>
+				<div class="fold-content">
+					<div class="fold-btn-shops"><span class="layui-btn">展开 / 收起</span></div>
+					<div class="shop-apply">
+						<table class="layui-table">
+							<!--{if $shop_applys}-->
+							<thead>
+							<tr>
+								<th>商铺ID</th>
+								<th>商铺名称</th>
+								<th>商铺地址</th>
+								<th>申请状态</th>
+								<th>操作</th>
+							</tr>
+							</thead>
+							<!--{/if}-->
+							<!--{loop $shop_applys $sp}-->
+							<tr>
+								<td>$sp['shop_id']</td>
+								<td>$sp['shop_name']</td>
+								<td>$sp['shop_locate']</td>
+								<td>{$sp['status']}</td>
+								<td><button class="layui-btn layui-btn-small shop_delete layui-btn-danger" data-admin-shop-id="{$sp['id']}">$cdo['shop_delete']</button>
+							</tr>
+							<!--{/loop}-->
+						</table>
+					</div>
+				</div>
+		</fieldset>
+		<!--搜索框-->
+		<fieldset class="fieldsetclass apply-content">
+			<legend>商铺申请</legend>
+			<form type="GET" action="index.php">
+				<input type="hidden" name="mod" value="{$mod}">
+				<input type="hidden" name="act" value="{$act}">
+				<input type="hidden" name="opt" value="{$opt}">
+				<div class="layui-form-item">
+					<label class="layui-form-label">省/市/区:</label>
+					<div class="layui-input-block">
+						<select name="province" id="get-province">
+							<option value="">请选择省份</option>
+							<!--{loop $provinces $item}-->
+							<option value="{$item}" {echo $item == $province ? 'selected' : ''}>{$item}</option>
+							<!--{/loop}-->
+						</select>
+						<select name="city" id="get-city">
+							<option value="">请选择城市</option>
+						</select>
+						<select name="area" id="get-area">
+							<option value="">请选择区域</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">商铺名称:</label>
+					<div class="layui-input-inline">
+						<input type="text" class="layui-input" id="shop-value" name="shop_search" value="{$shop_search}">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div>
+						<button class="layui-btn" id="shop-search">搜索商铺</button>
+					</div>
+				</div>
+			</form>
+			<table class="layui-table">
+			<!--{if $shops}-->
+				<thead>
+					<tr>
+						<th>
+							商铺ID
+						</th>
+						<th>商铺名称</th>
+						<th>商铺地址</th>
+						<th>申请状态</th>
+						<th>
+							<input type="checkbox" class="select-all-ids">
+							操作
+						</th>
+					</tr>
+				</thead>
+				<tbody class="tbody">
+						<!--{loop $shops $shop}-->
+							<!--{if !in_array($shop['id'],$shop_applys_key)}-->
+							<tr>
+								<td>
+									$shop['id']
+								</td>
+								<td>$shop['name']</td>
+								<td>$shop['locate']</td>
+								<td>未申请</td>
+								<td>
+									<input type="checkbox" name="id" value="{$shop['id']}" class="shop-id">
+								</td>
+							</tr>
+							<!--{/if}-->
+						<!--{/loop}-->
+						<tr>
+							<td colspan="5"><button class="layui-btn layui-btn-normal one-key-apply">批量申请</button></td>
+						</tr>
+				</tbody>
+			<!--{/if}-->
+			</table>
+		</fieldset>
+	<!--{/if}-->
+<!--{else}-->
+<blockquote class="layui-elem-quote">全局搜索权限,无需设置</blockquote>
+<!--{/if}-->
+<script>
+    layui.use('layer', function() {
+        var layer = layui.layer;
+    });
+</script>
+<!--{if $cdo['city_apply']}-->
+<script>
+jQuery(function($) {
+    //全选
+    $("#role-add-all").click(function () {
+        if (this.checked) {
+            $(".access :checkbox").prop("checked", true);
+        } else {
+            $(".access :checkbox").prop("checked", false);
+        }
+    });
+
+    //部分全选
+    $(".first-input").click(function () {
+        var checkAll = $(this).siblings("ul").find(":checkbox");
+        if (this.checked) {
+            checkAll.prop("checked", true);
+        } else {
+            checkAll.prop("checked", false);
+        }
+    });
+
+    $(".second-input").click(function () {
+        var se = $(this).parents(".first-floor").find(".first-input");
+        var sm = $(this).parent().parent().find(".second-input");
+        if (this.checked) {
+            se.prop("checked", true);
+        } else {
+			for(var i = 0; i < sm.length; i++){
+				if(sm[i].checked){
+                	return;
+                }
+            }
+            se.prop("checked", false);
+		}
+    });
+
+    $(".fold-btn span").click(function () {
+        $(".city-apply").toggle();
+    })
+
+	$('#apply-cities').click(function () {
+		var cities = [];
+		$(".city-name:checked").each(function () {
+			cities.push($(this).val());
+		});
+		$.ajax({
+			type: 'POST',
+			data: {cities: cities, do: 'city_apply'},
+			url: 'index.php?mod={$mod}&act={$act}&opt={$opt}',
+			success: function (e) {
+			    console.log(e);
+				if (e.code == 0) {
+					layer.msg(e.msg, {icon: 1}, function () {
+						window.location.reload();
+					});
+				} else {
+					layer.msg(e.msg, {icon: 2});
+				}
+			}
+		});
+		return false;
+	});
+
+    $('#modify-cities').click(function () {
+        var cities = [];
+        $(".city-name:checked").each(function () {
+            cities.push($(this).val());
+        });
+        $.ajax({
+            type: 'POST',
+            data: {cities: cities, do: 'city_modify'},
+            url: 'index.php?mod={$mod}&act={$act}&opt={$opt}',
+            success: function (e) {
+                if (e.code == 0) {
+                    layer.msg(e.msg, {icon: 1}, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    layer.msg(e.msg, {icon: 2});
+                }
+            }
+        });
+        return false;
+    });
+
+	$('#delete-cities').click(function () {
+		$.ajax({
+			type: 'POST',
+			data: {do: 'city_delete'},
+			url: 'index.php?mod={$mod}&act={$act}&opt={$opt}',
+			success: function (e) {
+				if (e.code == 0) {
+					layer.msg(e.msg, {icon: 1}, function () {
+						window.location.reload();
+					});
+				} else {
+					layer.msg(e.msg, {icon: 2});
+				}
+			}
+		});
+		return false;
+	});
+
+})
+</script>
+<!--{/if}-->
+<!--{if $cdo['shop_apply']}-->
+<script>
+	$(".shop_delete").on('click',function(){
+		var pt = $(this).parent().parent();
+		var admin_shop_id = $(this).data('admin-shop-id');
+		var url = '/index.php?mod={$mod}&act={$act}&opt={$opt}&do=shop_delete&admin_shop_id=' + admin_shop_id;
+		console.log(url);
+		$.ajax({
+			type: 'POST',
+			data: {},
+			url: url,
+			success: function (e) {
+				console.log(e);
+				if (e.code == 0) {
+					layer.msg(e.msg, {icon: 1}, function () {
+						pt.hide();
+					});
+				} else {
+					layer.msg(e.msg, {icon: 2});
+				}
+			}
+		});
+	});
+
+	$('#get-province').change(function(){
+		$.ajax({
+			type: 'POST',
+			data: {province:$('#get-province').val(), ajax:1},
+			url: 'index.php?mod=cp&act=shop&opt=get_area_info',
+			success: function(e) {
+				var html = '<option value="">请选择城市</option>';
+				for(var i in e.data) {
+					html += '<option value="'+e.data[i]+'">' + e.data[i] + '</option>';
+				}
+				$('#get-city').html(html);
+				$('#get-area').html('<option value="">请选择区域</option>');
+			}
+		})
+	});
+
+	$('#get-city').change(function(){
+		$.ajax({
+			type: 'POST',
+			data: {province:$('#get-province').val(), city:$('#get-city').val(), ajax:1},
+			url: 'index.php?mod=cp&act=shop&opt=get_area_info',
+			success: function(e) {
+				var html = '<option value="">请选择区域</option>';
+				for(var i in e.data) {
+					html += '<option value="'+e.data[i]+'">' + e.data[i] + '</option>';
+				}
+				$('#get-area').html(html);
+			}
+		})
+	});
+
+	$('.one-key-apply').click(function(){
+		var ids = [];
+		$(".shop-id:checked").each(function(){
+			ids.push($(this).val());
+		});
+		console.log(ids);
+		if(ids.length > 0) {
+			var url = '/index.php?mod={$mod}&act={$act}&opt={$opt}&do=shop_apply';
+			$.ajax({
+				type: 'POST',
+				data: {'shop_id': ids},
+				url: url,
+				success: function (e) {
+					if (e.code == 0) {
+						layer.msg(e.msg, {icon: 1}, function () {
+							window.location.reload();
+						});
+					} else {
+						layer.msg(e.msg, {icon: 2});
+					}
+				}
+			});
+		}
+	})
+
+	$('.select-all-ids').click(function(){
+		if(this.checked){
+			$('.shop-id').prop("checked", true);
+		}else{
+			$('.shop-id').prop("checked", false);
+		}
+	})
+
+	$(".fold-btn-shops span").click(function(){
+		$(".shop-apply").toggle();
+	})
+</script>
+<script>
+	!function(){
+		if($('#get-province').val()){
+                $.ajax({
+                    type: 'POST',
+					async: false,
+                    data: {province:$('#get-province').val(), ajax:1},
+                    url: 'index.php?mod=cp&act=shop&opt=get_area_info',
+                    success: function(e) {
+                        var html = '<option value="">请选择城市</option>';
+                        for(var i in e.data) {
+                            if(e.data[i] == '{$city}') {
+                                html += '<option value="'+e.data[i]+'" selected>' + e.data[i] + '</option>';
+							} else {
+                                html += '<option value="'+e.data[i]+'">' + e.data[i] + '</option>';
+							}
+
+                        }
+                        $('#get-city').html(html);
+                        $('#get-area').html('<option value="">请选择区域</option>');
+                    }
+                })
+			}
+		if(($('#get-city')).val()){
+                $.ajax({
+                    type: 'POST',
+                    data: {province:$('#get-province').val(), city:$('#get-city').val(), ajax:1},
+                    url: 'index.php?mod=cp&act=shop&opt=get_area_info',
+                    success: function(e) {
+                        var html = '<option value="">请选择区域</option>';
+                        for(var i in e.data) {
+                            if(e.data[i] == '{$area}') {
+                                html += '<option value="'+e.data[i]+'" selected>' + e.data[i] + '</option>';
+							} else {
+                                html += '<option value="'+e.data[i]+'">' + e.data[i] + '</option>';
+							}
+                        }
+                        $('#get-area').html(html);
+                    }
+                })
+        	}
+	}();
+</script>
+<!--{/if}-->
+{template jjsan:cp/common/footer}

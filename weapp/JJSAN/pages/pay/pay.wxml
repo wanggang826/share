@@ -1,0 +1,238 @@
+<view class="container">
+
+  <!-- 充值 -->
+  <view wx:if="{{show[0]}}">
+    <view class="top">
+      <image src="../../assets/img/pay.png"></image>
+      <text class="usablemoney">账户余额{{wallet.usable_money}}元</text>
+      <text class="remind">{{wallet.need_pay>0?"需预存"+wallet.need_pay+"元才能借伞":"钱包余额充足"}}</text>
+      <form report-submit="true" bindsubmit="pay">
+        <button form-type='submit' class="pay" style="{{pay?'background:#C5C5C5':'background:linear-gradient(#ffd500, #feda02)'}}">{{wallet.need_pay>0?'立即充值':'立即借伞'}}</button>
+      </form>
+      <view class="tip">
+        <image src="../../assets/img/agree.png"></image>
+        <view>同意
+          <view class="agree" bindtap='checkAgreement'>《JJ伞相关协议》</view>
+        </view>
+      </view>
+    </view>
+    <view class="bottom">
+      <view class="name">
+        <view class="line"></view>
+        <view>温馨提示</view>
+        <view class="line"></view>
+      </view>
+      <view class="content">
+        <text>1.借伞时，需支付{{wallet.deposit_need}}元押金，当钱包余额大于等于{{wallet.deposit_need}}元时，自动把{{wallet.deposit_need}}元余额转为押金</text>
+      <text>2.还伞后，从押金中扣除伞费用（{{wallet.fee_strategy}}），并自动将剩余押金转为余额</text>
+      <view>3.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 准备出伞 -->
+<view wx:if="{{show[1]}}">
+  <view class="top">
+    <image src="../../assets/img/waiting.gif"></image>
+    <text class="usablemoney">请稍后</text>
+    <text class="remind1">正在出伞</text>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.当伞槽绿灯闪烁时，取出JJ伞</text>
+      <text>2.如果借伞失败，押金将自动转为余额，可直接提现</text>
+      <text>3.借伞收费{{wallet.fee_strategy}}，费用会从押金中扣减</text>
+      <view>4.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 准备取伞 -->
+<view wx:if="{{show[2]}}">
+  <view class="top">
+    <image src="../../assets/img/waiting.gif"></image>
+    <text class="usablemoney">请取伞</text>
+    <text class="remind1">{{slot}}号槽伞已出</text>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.当伞槽绿灯闪烁时，取出JJ伞</text>
+      <text>2.如果借伞失败，押金将自动转为余额，可直接提现</text>
+      <text>3.借伞收费{{wallet.fee_strategy}}，费用会从押金中扣减</text>
+      <view>4.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 取伞成功 -->
+<view wx:if="{{show[3]}}">
+  <view class="top">
+    <image src="../../assets/img/succ.png"></image>
+    <text class="usablemoney">感谢您的使用</text>
+    <text class="remind">取伞成功</text>
+    <form report-submit="true" bindsubmit="goToGuide">
+      <button form-type='submit' class="btn">了解还伞流程</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.请检查伞是否可用，如发现伞已损坏，请在两分钟内将伞归还，不产生任何费用</text>
+      <text>2.借伞收费{{wallet.fee_strategy}}小时，费用将从押金中扣减</text>
+      <text>3.若15天内未还伞，系统将自动判定为伞已遗失，会从押金中扣减费用{{wallet.deposit_need}}元</text>
+      <view>4.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 取伞失败 -->
+<view wx:if="{{show[4]}}">
+  <view class="top">
+    <image src="../../assets/img/fail.png"></image>
+    <text class="usablemoney">请在有效的时间内取伞</text>
+    <text class="remind">取伞失败</text>
+    <form report-submit="true" bindsubmit="retry">
+      <button form-type='submit' class="btn">重新借伞</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.请检查伞是否可用，如发现伞已损坏，请在两分钟内将伞归还，不产生任何费用</text>
+      <text>2.借伞收费{{wallet.fee_strategy}}小时，费用将从押金中扣减</text>
+      <text>3.若15天内未还伞，系统将自动判定为伞已遗失，会从押金中扣减费用{{wallet.deposit_need}}元</text>
+      <view>4.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 出伞失败 -->
+<view wx:if="{{show[5]}}">
+  <view class="top">
+    <image src="../../assets/img/fail.png"></image>
+    <text class="usablemoney">设备无响应</text>
+    <text class="remind">取伞失败</text>
+    <form report-submit="true" bindsubmit="retry">
+      <button form-type='submit' class="btn">点击重试</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.请检查伞是否可用，如发现伞已损坏，请在两分钟内将伞归还，不产生任何费用</text>
+      <text>2.借伞收费{{wallet.fee_strategy}}小时，费用将从押金中扣减</text>
+      <text>3.若15天内未还伞，系统将自动判定为伞已遗失，会从押金中扣减费用{{wallet.deposit_need}}元</text>
+      <view>4.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 无伞可用 -->
+<view wx:if="{{show[6]}}">
+  <view class="top">
+    <image src="../../assets/img/noumbrella.png"></image>
+    <text class="usablemoney">当前伞柜</text>
+    <text class="remind">没有可用的伞</text>
+    <form report-submit="true" bindsubmit="retry">
+      <button form-type='submit' class="btn">扫码其它伞柜</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.伞柜中仅存故障伞或伞已全部借出，给您带来的不便深感抱歉</text>
+      <view>2.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 伞柜正在被其他人使用 -->
+<view wx:if="{{show[7]}}">
+  <view class="top">
+    <image src="../../assets/img/using.png"></image>
+    <text class="usablemoney">请稍后</text>
+    <text class="remind">伞柜正被其它用户使用</text>
+    <form report-submit="true" bindsubmit="retry">
+      <button form-type='submit' class="btn">点击重试</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.伞柜同一时间内仅支持一位用户借伞，其他用户操作完成后您才可以进行借伞操作，给您带来的不便深感抱歉</text>
+      <view>2.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 伞柜不在线 -->
+<view wx:if="{{show[8]}}">
+  <view class="top">
+    <image src="../../assets/img/offline.png"></image>
+    <text class="usablemoney">伞柜不在线</text>
+    <text class="remind">请扫描其它伞柜</text>
+    <form report-submit="true" bindsubmit="retry">
+      <button form-type='submit' class="btn">扫码其它伞柜</button>
+    </form>
+  </view>
+  <view class="bottom">
+    <view class="name">
+      <view class="line"></view>
+      <view>温馨提示</view>
+      <view class="line"></view>
+    </view>
+    <view class="content">
+      <text>1.伞柜发生断网/断电故障，给您带来的不便深感抱歉</text>
+      <view>2.如果您需要其它帮助，欢迎致电客服
+        <view class="phone" bindtap='call'>400-900-8113</view>
+      </view>
+    </view>
+  </view>
+</view>
+</view>

@@ -1,0 +1,31 @@
+/env_cfg.inc.php
+/lib/wxpaycert_old/
+doc/
+/source/plugin/jjsan/public/static/mini/
+/source/plugin/jjsan/public/static/apk/
+/logs/
+
+# 后台生产的二维码文件夹
+/public/static/qrcode/
+
+# 终端升级文件用的文件夹
+/public/static/update/
+
+# alipay key
+/lib/alipaykey/
+
+# 上传的图片文件夹
+/public/upload/
+
+.settings
+.settings/
+.project
+.buildpath
+.idea/
+/public/data
+/mod/act/api/wxapi.php
+
+
+/public/MP_verify_qihnTz6bEEkniI9y.txt
+/public/MP_verify_Om2AJJJfWyy9NzxT.txt
+

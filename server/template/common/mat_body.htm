@@ -1,0 +1,12 @@
+{template jjsan:cp/common/header}
+
+<div class="imgbody">
+	<img src="{$src}" alt="{$matid}"> 
+	<input type="hidden" name="{$name}[{$matid}][src]" value="{$src}">
+	<!--{if $simple==0}-->
+		<input type="text" name="{$name}[{$matid}][url]" size="30" placeholder="{lang jjsan:input_url}" required>
+		<input type="text" name="{$name}[{$matid}][desc]" size="30" placeholder="{lang jjsan:input_desc}" >
+	<!--{/if}-->
+	<a href="javascript:;" onclick="delmatfrbox(this);">{lang jjsan:delete}</a>
+</div>
+{template jjsan:cp/common/footer}

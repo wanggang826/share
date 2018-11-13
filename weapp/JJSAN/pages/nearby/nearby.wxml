@@ -1,0 +1,30 @@
+<scroll-view scroll-y="true" class="container" bindscrolltolower="loadMore">
+  <form>
+    <view class="get">
+      <image class="search" src="../../assets/img/searchicon.png" />
+      <input placeholder="输入网址名称、地址、关键字" confirm-type="search" bindinput="check" bindconfirm="search" />
+    </view>
+  </form>
+  <view class="down">
+    <view class="content" wx:for="{{array}}" id="{{index}}" bindtap="getStoreInfo">
+      <view>
+        <image src="../../assets/img/building.png"></image>
+      </view>
+      <view class="info">
+        <view class="name">
+          <text>{{item.call}}</text>
+          <text class="distance">{{item.distance}}</text>
+        </view>
+        <text class="address">{{item.address}}</text>
+        <view class="detail">
+          <view class="canlend">可借{{item.usable}}</view>
+          <view class="canreturn">可还{{item.empty}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="tip" wx:if="{{array.length==0&&count>0}}">
+    <image src="../../assets/img/noresult.png"></image>
+    <text>没有符合条件的内容</text>
+  </view>
+</scroll-view>

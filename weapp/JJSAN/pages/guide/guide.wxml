@@ -1,0 +1,50 @@
+<scroll-view class="container">
+  <view class="content">
+    <view class="title">
+      <view>
+        借伞
+      </view>
+    </view>
+    <view class="guide">
+      <image src="../../assets/img/sweep.png" class="photo"></image>
+      <image src="../../assets/img/nextright.png" class="label"></image>
+      <view></view>
+    </view>
+    <view class="guide">
+      <view></view>
+      <image src="../../assets/img/nextleft.png" class="label"></image>
+      <image src="../../assets/img/recharge.png" class="photo"></image>
+    </view>
+    <view class="guide">
+      <image src="../../assets/img/insure.png" class="photo"></image>
+      <image src="../../assets/img/nextright.png" class="label"></image>
+      <view></view>
+    </view>
+    <view class="guide">
+      <view></view>
+      <image src="../../assets/img/borrow.png" class="photo"></image>
+    </view>
+  </view>
+  <view class="line"></view>
+  <view class="content">
+    <view class="title">
+      <view>
+        还伞
+      </view>
+    </view>
+    <view class="guide">
+      <image src="../../assets/img/gotostation.png" class="photo"></image>
+      <image src="../../assets/img/nextright.png" class="label"></image>
+      <view></view>
+    </view>
+    <view class="guide">
+      <view></view>
+      <image src="../../assets/img/nextleft.png" class="label"></image>
+      <image src="../../assets/img/return.png" class="photo"></image>
+    </view>
+    <view class="guide">
+      <image src="../../assets/img/msg.png" class="photo"></image>
+      <view></view>
+    </view>
+  </view>
+</scroll-view>

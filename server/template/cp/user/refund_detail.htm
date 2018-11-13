@@ -1,0 +1,22 @@
+{template jjsan:cp/common/header}
+<style type="text/css">
+    table{margin: 50px auto}
+    td{display: inline-block; padding: 20px 50px; text-align: center;}
+    td:first-child{width: 300px}
+    tr{border-bottom: 1px dotted}
+</style>
+<table>
+    <tr>
+        <td><strong>{lang jjsan:order_id}</strong></td>
+        <td><strong>金额</strong></td>
+    </tr>
+    <!--{loop $refund_detail $order}-->
+    <tr>
+        <td>{$order[0]}</td>
+        <td>{$order[1]}</td>
+    </tr>
+    <!--{/loop}-->
+</table>
+<pre>{$debug}</pre>
+{template jjsan:cp/common/footer}
+

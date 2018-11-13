@@ -1,0 +1,53 @@
+<scroll-view scroll-y="true" class='scroll'>
+  <view class='container'>
+    <view class='top'>
+      <view wx:for="{{consumer.items}}">
+        <view class='list' id="{{index}}" bindtap="choose">
+          <text> {{item.title}}</text>
+          <image src="{{item.show?'../../assets/img/back.png':'../../assets/img/check.png'}}"></image>
+        </view>
+        <view class="user" wx:if="{{index==0&&item.show}}">
+          <view wx:for="{{consumer.user}}">
+            <view class='title'>{{item.title}}</view>
+            <view class='content'>
+              <view wx:for="{{item.content}}" wx:for-item="detail">{{detail}}</view>
+            </view>
+          </view>
+          <view class='name'>JJ伞共享使用协议</view>
+          <view wx:for="{{consumer.use}}">
+            <view class='title'>{{item.title}}</view>
+            <view class='content'>
+              <view wx:for="{{item.content}}" wx:for-item="detail">{{detail}}</view>
+            </view>
+          </view>
+          <view class='name'>JJ伞共享隐私规则</view>
+          <view wx:for="{{consumer.secret}}">
+            <view class='title'>{{item.title}}</view>
+            <view class='content'>
+              <view wx:for="{{item.content}}" wx:for-item="detail">{{detail}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="deposit" wx:if="{{index==1&&item.show}}">
+          <view wx:for="{{consumer.deposit}}">
+            <view class='title'>{{item.title}}</view>
+            <view class='content'>{{item.content}}</view>
+          </view>
+        </view>
+        <view class="recharge" wx:if="{{index==2&&item.show}}">
+          <view wx:for="{{consumer.recharge}}" wx:for-item="its">
+            <view class='title'>{{its.title}}</view>
+            <view class='content'>
+              <view wx:for="{{its.content}}" wx:for-item="detail">{{detail}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class='bottom'>
+      <form report-submit="true" bindsubmit="call">
+        <button form-type='submit'>致电客服</button>
+      </form>
+    </view>
+  </view>
+</scroll-view>

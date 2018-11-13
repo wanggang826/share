@@ -1,0 +1,24 @@
+<scroll-view scroll-y="true">
+  <view class="container">
+
+    <view class="content" wx:for="{{items}}">
+      <view class="{{item.status?'title':'titleclosed'}}" bindtap="showDetails" id="{{index}}">
+        <text>{{item.question}}</text>
+        <image src="{{item.status?'../../assets/img/back.png':'../../assets/img/check.png'}}"></image>
+      </view>
+      <view class="answer" wx:if="{{item.status}}">
+        {{item.answer}}
+        <view wx:if="{{item.status}}" wx:for="{{item.content}}" wx:for-index="idx" wx:for-item="it">
+          {{it}}
+        </view>
+      </view>
+    </view>
+
+    <view class="btn">
+      <form report-submit="true" bindsubmit="call">
+        <button form-type='submit'>致电客服</button>
+      </form>
+    </view>
+
+  </view>
+</scroll-view>
